@@ -1,4 +1,4 @@
-<h1 align="center"> Web Generator with Tailwind CSS, React, Shadcn UI, and Vite</h1>
+<h1 align="center"> Web Colors Generator </h1>
 
 <p align="center">
   <img src="https://skillicons.dev/icons?i=react,typescript,vite,tailwind" alt="Tech Stack Icons" />

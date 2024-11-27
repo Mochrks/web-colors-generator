@@ -24,13 +24,16 @@ function rgbToHex(r: number, g: number, b: number) {
     return "#" + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')
 }
 
-function hexToRgb(hex: string) {
+function hexToRgb(hex: string): [number, number, number] {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-    return result ? [
+    if (!result) {
+        throw new Error(`Invalid hex color: ${hex}`)
+    }
+    return [
         parseInt(result[1], 16),
         parseInt(result[2], 16),
         parseInt(result[3], 16)
-    ] : null
+    ]
 }
 
 function rgbToHsl(r: number, g: number, b: number) {
@@ -38,7 +41,9 @@ function rgbToHsl(r: number, g: number, b: number) {
     g /= 255
     b /= 255
     const max = Math.max(r, g, b), min = Math.min(r, g, b)
-    let h, s, l = (max + min) / 2
+    let h: number = 0;
+    let s
+    const l = (max + min) / 2
 
     if (max === min) {
         h = s = 0
@@ -98,7 +103,8 @@ export default function ColorGenerator() {
 
     const getColorString = (h: number, s: number, l: number, format: 'hsl' | 'rgb' | 'hex' = 'hsl') => {
         const rgb = hslToRgb(h, s, l)
-        const hex = rgbToHex(...rgb)
+        const [r, g, b] = rgb;
+        const hex = rgbToHex(r, g, b);
         switch (format) {
             case 'hsl':
                 return `hsl(${h}, ${s}%, ${l}%)`
@@ -271,7 +277,7 @@ export default function ColorGenerator() {
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-6">
-                        {Object.entries(tailwindColors).map(([name, hex], paletteIndex) => (
+                        {Object.entries(tailwindColors).map(([name], paletteIndex) => (
                             <div key={paletteIndex} className="space-y-2">
                                 <h3 className="text-lg font-semibold">{name}</h3>
                                 <div className="grid grid-cols-5 gap-2">

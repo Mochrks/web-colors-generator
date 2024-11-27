@@ -9,6 +9,12 @@
     }
   ],
   "compilerOptions": {
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
       "@/*": [

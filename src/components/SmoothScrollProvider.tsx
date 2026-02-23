@@ -12,37 +12,48 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
 
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.5,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      touchMultiplier: 2,
+      touchMultiplier: 1.5,
     });
 
     lenisRef.current = lenis;
 
-    // Connect Lenis with GSAP ScrollTrigger
-    lenis.on("scroll", ScrollTrigger.update);
+    // Progress bar update
+    const progressBar = document.getElementById("scroll-progress-bar");
+
+    lenis.on("scroll", (e: { scroll: number }) => {
+      ScrollTrigger.update();
+
+      // Update progress bar
+      if (progressBar) {
+        const scrolled =
+          (e.scroll / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+        progressBar.style.width = `${scrolled}%`;
+      }
+    });
 
     gsap.ticker.add((time) => {
       lenis.raf(time * 1000);
     });
     gsap.ticker.lagSmoothing(0);
 
-    // Scroll-triggered fade-in animations
+    // Scroll-triggered reveal animations for any element with [data-animate]
     const sections = document.querySelectorAll("[data-animate]");
     sections.forEach((section) => {
       gsap.fromTo(
         section,
-        { opacity: 0, y: 30 },
+        { opacity: 0, scale: 0.95 },
         {
           opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: "power2.out",
+          scale: 1,
+          duration: 1,
+          ease: "expo.out",
           scrollTrigger: {
             trigger: section,
-            start: "top 85%",
-            toggleActions: "play none none none",
+            start: "top 90%",
+            toggleActions: "play none none reverse",
           },
         }
       );

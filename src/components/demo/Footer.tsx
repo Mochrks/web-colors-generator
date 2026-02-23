@@ -1,4 +1,4 @@
-import { Heart, Github, ExternalLink } from "lucide-react";
+import { Github, ExternalLink } from "lucide-react";
 
 export function Footer() {
   return (
@@ -6,11 +6,10 @@ export function Footer() {
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>© 2025 ColorGen Pro.</span>
+            <span>© {new Date().getFullYear()} ColorGen Pro.</span>
             <span className="hidden sm:inline">•</span>
             <span className="flex items-center gap-1">
-              Built with <Heart className="h-3 w-3 text-red-500 fill-red-500 animate-pulse-soft" />{" "}
-              by{" "}
+              Created by
               <a
                 href="https://github.com/mochrks"
                 target="_blank"

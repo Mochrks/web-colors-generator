@@ -43,7 +43,7 @@ This Web Generator is a tool that allows developers to quickly create responsive
 
 ## How to Use
 
-1. After starting the application, open `http://localhost:5173` in your browser.
+1. After starting the application, open `http://localhost:5173` in your browsers.
 2. Use the interface to start creating the UI components you need.
 3. Customize components using Tailwind CSS and Shadcn UI according to your design requirements.
 

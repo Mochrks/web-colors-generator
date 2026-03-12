@@ -12,7 +12,7 @@
 
 ## Project Overview
 
-This Web Generator is a tool that allows developers to quickly create responsive and modern user interfaces using Tailwind CSS, React, and Shadcn UI. By leveraging Vite as the bundler, this project offers fast development times and a smooth experience.
+This Web Generator is a tools that allow developers to quickly create responsive and modern user interfaces using Tailwind CSS, React, and Shadcn UI. By leveraging Vite as the bundler, this project offers fast development times and a smooth experience.
 
 
 

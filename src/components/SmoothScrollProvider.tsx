@@ -20,18 +20,8 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
 
     lenisRef.current = lenis;
 
-    // Progress bar update
-    const progressBar = document.getElementById("scroll-progress-bar");
-
-    lenis.on("scroll", (e: { scroll: number }) => {
+    lenis.on("scroll", () => {
       ScrollTrigger.update();
-
-      // Update progress bar
-      if (progressBar) {
-        const scrolled =
-          (e.scroll / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-        progressBar.style.width = `${scrolled}%`;
-      }
     });
 
     gsap.ticker.add((time) => {

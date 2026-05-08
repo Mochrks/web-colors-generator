@@ -32,15 +32,13 @@ export default function ColorGenerator() {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      tl.to(".hero-badge", { opacity: 1, y: 0, duration: 1, startAt: { y: 20 } })
-        .to(".hero-title", { opacity: 1, y: 0, duration: 1.2, startAt: { y: 40 } }, "-=0.8")
-        .to(".hero-description", { opacity: 1, y: 0, duration: 1, startAt: { y: 20 } }, "-=0.8")
-        .to(".hero-stats", { opacity: 1, y: 0, duration: 1, startAt: { y: 20 } }, "-=0.8")
-        .to(".hero-scroll-indicator", { opacity: 1, duration: 1 }, "-=0.5");
+      tl.to(".hero-badge", { opacity: 1, y: 0, duration: 0.8, startAt: { y: 10 } })
+        .to(".hero-title", { opacity: 1, y: 0, duration: 1, startAt: { y: 20 } }, "-=0.6")
+        .to(".hero-description", { opacity: 1, y: 0, duration: 0.8, startAt: { y: 10 } }, "-=0.6")
+        .to(".hero-stats", { opacity: 1, y: 0, duration: 0.8, startAt: { y: 10 } }, "-=0.6");
 
-      // Scroll animations
       gsap.to(heroRef.current, {
         scrollTrigger: {
           trigger: heroRef.current,
@@ -48,19 +46,16 @@ export default function ColorGenerator() {
           end: "bottom top",
           scrub: true,
         },
-        y: 100,
+        y: 50,
         opacity: 0,
-        scale: 0.9,
       });
 
-      // Stats cards staggered hover-like entry
-      gsap.from(".hero-stats > div", {
+      gsap.from(".stat-item", {
         opacity: 0,
-        scale: 0.8,
-        y: 30,
+        y: 20,
         duration: 0.8,
         stagger: 0.1,
-        ease: "back.out(1.7)",
+        ease: "power2.out",
         scrollTrigger: {
           trigger: ".hero-stats",
           start: "top 90%",
@@ -72,88 +67,67 @@ export default function ColorGenerator() {
   }, []);
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 space-y-12">
+    <div className="max-w-[1200px] mx-auto px-6 space-y-24">
       {/* ======== HERO ======== */}
       <div
         ref={heroRef}
-        className="relative text-center space-y-8 py-16 sm:py-24 overflow-hidden"
+        className="relative text-center space-y-10 py-20 sm:py-32"
         id="hero-section"
       >
-        {/* Decorative Background Elements */}
-        <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-[100px] animate-pulse-soft" />
-          <div
-            className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-pink-500/20 rounded-full blur-[100px] animate-pulse-soft"
-            style={{ animationDelay: "1s" }}
-          />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-300/10 rounded-full blur-[120px]" />
-        </div>
-
-        <div className="relative z-10 space-y-6">
-          <div className="hero-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-panel text-primary text-xs font-semibold opacity-0">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span className="tracking-wider uppercase">Next-Gen Creative Suite</span>
+        <div className="relative z-10 space-y-8">
+          <div className="hero-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-500 text-[10px] font-bold uppercase tracking-[0.2em] opacity-0">
+            <Sparkles className="h-3 w-3" />
+            <span>Design With Perfect Colors</span>
           </div>
 
-          <h1 className="hero-title text-4xl sm:text-6xl lg:text-8xl font-black tracking-tighter leading-[0.9] opacity-0">
-            <span className="gradient-text  text-glow">Color Generation</span>
+          <h1 className="hero-title text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-neutral-900 dark:text-white opacity-0">
+            Professional color
             <br />
-            <span className="text-foreground">Made Beautiful</span>
+            <span className="text-neutral-400 dark:text-neutral-500">made simple.</span>
           </h1>
 
-          <p className="hero-description text-muted-foreground max-w-2xl mx-auto text-base sm:text-lg leading-relaxed opacity-0">
-            Elevate your design workflow with professional-grade color tools. Experience seamless
-            extraction, harmony generation, and high-fidelity gradients in one stunning workspace.
+          <p className="hero-description text-neutral-500 dark:text-neutral-400 max-w-xl mx-auto text-lg sm:text-xl leading-relaxed font-medium opacity-0">
+            A minimalist workspace for designers to pick, harmonize, and generate stunning colors
+            with precision and ease.
           </p>
 
           {/* Quick stats with cards */}
-          <div className="hero-stats flex flex-wrap justify-center gap-4 sm:gap-6 pt-6 opacity-0">
+          <div className="hero-stats flex flex-wrap justify-center gap-4 pt-4 opacity-0">
             {[
-              { label: "Formats", value: "6+", sub: "Universal support" },
-              { label: "Palettes", value: "23k", sub: "Curated daily" },
-              { label: "Tools", value: "7", sub: "Pro features" },
-              { label: "Harmonies", value: "5", sub: "Color theory" },
+              { label: "Formats", value: "6+" },
+              { label: "Palettes", value: "23k" },
+              { label: "Tools", value: "7" },
+              { label: "Harmonies", value: "5" },
             ].map((stat) => (
-              <div key={stat.label} className="group relative p-4 sm:p-6 rounded-3xl premium-card">
-                <div className="text-2xl sm:text-3xl font-black gradient-text group-hover:scale-110 transition-transform duration-500">
+              <div
+                key={stat.label}
+                className="stat-item min-w-[120px] p-6 rounded-3xl apple-card bg-white dark:bg-neutral-950"
+              >
+                <div className="text-2xl font-bold text-neutral-900 dark:text-white mb-1">
                   {stat.value}
                 </div>
-                <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-foreground/80">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">
                   {stat.label}
-                </div>
-                <div className="text-[8px] sm:text-[10px] text-muted-foreground mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  {stat.sub}
                 </div>
               </div>
             ))}
-          </div>
-
-          <div className="hero-scroll-indicator pt-12 opacity-0">
-            <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
-                Scroll to explore
-              </span>
-              <div className="w-px h-12 bg-gradient-to-b from-primary to-transparent" />
-            </div>
           </div>
         </div>
       </div>
 
       {/* ======== TOOLS SECTION ======== */}
-      <section id="tools-section" data-animate>
+      <section id="tools-section" className="space-y-12" data-animate>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          {/* Tab Navigation */}
-          <div className="sticky top-16 z-40 py-3 -mx-4 px-4 sm:mx-0 sm:px-0">
-            <div className="overflow-x-auto pb-1 scrollbar-hide">
-              <TabsList className="inline-flex w-auto min-w-full sm:min-w-0 sm:w-full gap-1 p-1.5 rounded-2xl bg-muted/60 backdrop-blur-sm h-auto">
+          <div className="sticky top-14 z-40 py-6 apple-blur -mx-6 px-6">
+            <div className="max-w-fit mx-auto overflow-x-auto scrollbar-hide">
+              <TabsList className="inline-flex gap-1 p-1 rounded-2xl bg-neutral-100 dark:bg-neutral-900/50 border border-neutral-200/50 dark:border-neutral-800/50 h-auto">
                 {tools.map(({ id, label, icon: Icon }) => (
                   <TabsTrigger
                     key={id}
                     value={id}
-                    className="rounded-xl gap-2 px-3 sm:px-5 py-2.5 text-xs sm:text-sm data-[state=active]:bg-background data-[state=active]:shadow-lg data-[state=active]:shadow-primary/5 transition-all whitespace-nowrap flex-1 sm:flex-initial font-medium"
-                    id={`tab-${id}`}
+                    className="rounded-xl gap-2 px-5 py-2.5 text-xs font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-800 data-[state=active]:shadow-sm transition-all text-neutral-500 data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white"
                   >
-                    <Icon className="h-4 w-4 shrink-0" />
+                    <Icon className="h-3.5 w-3.5" />
                     {label}
                   </TabsTrigger>
                 ))}
@@ -161,27 +135,26 @@ export default function ColorGenerator() {
             </div>
           </div>
 
-          {/* Tab Content */}
-          <div className="mt-4">
-            <TabsContent value="picker" className="mt-0 animate-fade-in">
+          <div className="mt-8">
+            <TabsContent value="picker" className="mt-0 animate-fade-in outline-none">
               <ColorPickerConverter />
             </TabsContent>
-            <TabsContent value="harmony" className="mt-0 animate-fade-in">
+            <TabsContent value="harmony" className="mt-0 animate-fade-in outline-none">
               <ColorHarmony />
             </TabsContent>
-            <TabsContent value="gradient" className="mt-0 animate-fade-in">
+            <TabsContent value="gradient" className="mt-0 animate-fade-in outline-none">
               <GradientGenerator />
             </TabsContent>
-            <TabsContent value="contrast" className="mt-0 animate-fade-in">
+            <TabsContent value="contrast" className="mt-0 animate-fade-in outline-none">
               <ContrastChecker />
             </TabsContent>
-            <TabsContent value="blender" className="mt-0 animate-fade-in">
+            <TabsContent value="blender" className="mt-0 animate-fade-in outline-none">
               <ColorBlender />
             </TabsContent>
-            <TabsContent value="extract" className="mt-0 animate-fade-in">
+            <TabsContent value="extract" className="mt-0 animate-fade-in outline-none">
               <ImageColorExtractor />
             </TabsContent>
-            <TabsContent value="saved" className="mt-0 animate-fade-in">
+            <TabsContent value="saved" className="mt-0 animate-fade-in outline-none">
               <SavedColors />
             </TabsContent>
           </div>
@@ -189,17 +162,16 @@ export default function ColorGenerator() {
       </section>
 
       {/* ======== DIVIDER ======== */}
-      <div className="flex items-center gap-4" data-animate>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-muted/50 text-xs text-muted-foreground">
-          <Sparkles className="h-3 w-3 text-purple-500" />
-          Curated Palettes
-        </div>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      <div className="flex items-center gap-8 py-12" data-animate>
+        <div className="flex-1 h-px bg-neutral-200 dark:bg-neutral-800" />
+        <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-400">
+          Featured Collections
+        </span>
+        <div className="flex-1 h-px bg-neutral-200 dark:bg-neutral-800" />
       </div>
 
-      {/* ======== PALETTES SECTION — always visible ======== */}
-      <section id="palettes-section" data-animate>
+      {/* ======== PALETTES SECTION ======== */}
+      <section id="palettes-section" className="pb-24" data-animate>
         <PaletteShowcase />
       </section>
     </div>

@@ -89,52 +89,60 @@ function PaletteRow({ palette, format }: { palette: PaletteSection; format: Colo
   };
 
   return (
-    <Card className="glass-card overflow-hidden transition-shadow duration-300 hover:shadow-xl">
-      <CardContent className="p-4 sm:p-5">
+    <Card className="apple-card overflow-hidden bg-white dark:bg-neutral-900 border-none">
+      <CardContent className="p-6">
         {/* Palette Header */}
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-xl">{palette.emoji}</span>
-          <h3 className="text-base sm:text-lg font-bold">{palette.title}</h3>
-          <span className="text-[10px] font-medium text-muted-foreground ml-auto px-2 py-0.5 rounded-full bg-muted/60">
-            {Object.keys(palette.colors).length} colors
-          </span>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-xl">
+            {palette.emoji}
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100">
+              {palette.title}
+            </h3>
+            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-0.5">
+              {Object.keys(palette.colors).length} Essential Colors
+            </p>
+          </div>
         </div>
 
         {/* All colors in this palette */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           {Object.entries(palette.colors).map(([name, hex]) => {
             const shades = generateShades(hex, 11);
             const isExpanded = expandedColor === name;
 
             return (
-              <div key={name}>
+              <div key={name} className="group/row">
                 {/* Color Row: Name + Swatch + Shade Strip */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
                   {/* Color swatch + name */}
                   <div
-                    className="flex items-center gap-2 w-36 sm:w-44 shrink-0 cursor-pointer group/name"
+                    className="flex items-center gap-3 w-40 sm:w-52 shrink-0 cursor-pointer"
                     onClick={() => setExpandedColor(isExpanded ? null : name)}
                   >
                     <div
-                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg shadow-sm shrink-0 color-swatch ring-1 ring-black/5 dark:ring-white/10"
+                      className="w-8 h-8 rounded-xl shadow-sm shrink-0 border border-neutral-200/50 dark:border-neutral-800/50 transition-transform duration-500 group-hover/row:scale-105"
                       style={{ backgroundColor: hex }}
                     />
                     <div className="min-w-0">
-                      <span className="text-xs sm:text-sm font-semibold capitalize block truncate leading-tight">
+                      <span className="text-[13px] font-semibold capitalize block truncate text-neutral-800 dark:text-neutral-200">
                         {name.replace(/_/g, " ")}
                       </span>
-                      <code className="text-[9px] sm:text-[10px] text-muted-foreground">{hex}</code>
+                      <code className="text-[10px] font-bold text-neutral-400 uppercase tracking-tight">
+                        {hex}
+                      </code>
                     </div>
                   </div>
 
                   {/* Shade Strip — full width */}
-                  <div className="flex-1 flex h-8 sm:h-9 rounded-lg overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/5">
+                  <div className="flex-1 flex h-8 rounded-xl overflow-hidden border border-neutral-200/30 dark:border-neutral-800/30 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]">
                     {shades.map((shade, idx) => (
                       <TooltipProvider key={idx}>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div
-                              className="flex-1 cursor-pointer relative group/shade transition-all hover:flex-[2] duration-200"
+                              className="flex-1 cursor-pointer relative group/shade transition-all hover:flex-[2.5] duration-500"
                               style={{ backgroundColor: shade.hex }}
                               onClick={() => handleCopy(shade, `${name}-${idx}`)}
                             >
@@ -142,23 +150,21 @@ function PaletteRow({ palette, format }: { palette: PaletteSection; format: Colo
                                 {copiedKey === `${name}-${idx}` ? (
                                   <Check
                                     className="h-3 w-3"
-                                    style={{
-                                      color: getTextColor(shade.hex),
-                                    }}
+                                    style={{ color: getTextColor(shade.hex) }}
                                   />
                                 ) : (
                                   <Copy
-                                    className="h-2.5 w-2.5"
-                                    style={{
-                                      color: getTextColor(shade.hex),
-                                    }}
+                                    className="h-3 w-3"
+                                    style={{ color: getTextColor(shade.hex) }}
                                   />
                                 )}
                               </div>
                             </div>
                           </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs">
-                            <p className="font-mono">{formatColor(shade, format)}</p>
+                          <TooltipContent side="top">
+                            <p className="font-mono text-[11px] font-bold">
+                              {formatColor(shade, format)}
+                            </p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -167,20 +173,20 @@ function PaletteRow({ palette, format }: { palette: PaletteSection; format: Colo
 
                   {/* Expand toggle */}
                   <button
-                    className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded-lg shrink-0"
+                    className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors p-1.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 shrink-0"
                     onClick={() => setExpandedColor(isExpanded ? null : name)}
                   >
                     {isExpanded ? (
-                      <ChevronUp className="h-4 w-4" />
+                      <ChevronUp className="h-3.5 w-3.5" />
                     ) : (
-                      <ChevronDown className="h-4 w-4" />
+                      <ChevronDown className="h-3.5 w-3.5" />
                     )}
                   </button>
                 </div>
 
                 {/* Expanded detail grid */}
                 {isExpanded && (
-                  <div className="mt-2 ml-0 sm:ml-[calc(11rem)] grid grid-cols-11 gap-1.5 animate-scale-in">
+                  <div className="mt-4 ml-0 sm:ml-52 grid grid-cols-11 gap-2 animate-fade-in">
                     {shades.map((shade, idx) => (
                       <div
                         key={idx}
@@ -188,13 +194,11 @@ function PaletteRow({ palette, format }: { palette: PaletteSection; format: Colo
                         onClick={() => handleCopy(shade, `${name}-detail-${idx}`)}
                       >
                         <div
-                          className="w-full aspect-square rounded-md shadow-sm color-swatch ring-1 ring-black/5 dark:ring-white/5"
+                          className="w-full aspect-square rounded-lg shadow-sm border border-neutral-200/50 dark:border-neutral-800/50 group-hover/detail:scale-110 transition-transform duration-300"
                           style={{ backgroundColor: shade.hex }}
                         />
-                        <code className="text-[7px] sm:text-[8px] text-muted-foreground mt-0.5 block truncate leading-tight">
-                          {copiedKey === `${name}-detail-${idx}`
-                            ? "✓ Copied"
-                            : formatColor(shade, format)}
+                        <code className="text-[8px] font-bold text-neutral-400 mt-1.5 block truncate leading-tight uppercase">
+                          {copiedKey === `${name}-detail-${idx}` ? "✓" : shade.hex}
                         </code>
                       </div>
                     ))}
@@ -216,34 +220,42 @@ export default function PaletteShowcase() {
   const visiblePalettes = showAll ? allPalettes : allPalettes.slice(0, 6);
 
   return (
-    <div className="space-y-6" id="palette-showcase">
+    <div className="space-y-12" id="palette-showcase">
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
-            <span className="gradient-text">Color Palettes</span>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div className="space-y-1">
+          <h2 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+            Curated Collections
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            {allPalettes.length} curated palettes with 11 shades each • Click any shade to copy
+          <p className="text-[13px] font-medium text-neutral-500 dark:text-neutral-400">
+            {allPalettes.length} professionally curated sets with dynamic shade generation.
           </p>
         </div>
-        <Select value={format} onValueChange={(v: ColorFormat) => setFormat(v)}>
-          <SelectTrigger className="w-[130px] rounded-xl" id="palette-format-select">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="hex">HEX</SelectItem>
-            <SelectItem value="rgb">RGB</SelectItem>
-            <SelectItem value="rgba">RGBA</SelectItem>
-            <SelectItem value="hsl">HSL</SelectItem>
-            <SelectItem value="hsla">HSLA</SelectItem>
-            <SelectItem value="cmyk">CMYK</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-3">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-neutral-400">
+            Format
+          </span>
+          <Select value={format} onValueChange={(v: ColorFormat) => setFormat(v)}>
+            <SelectTrigger
+              className="w-[120px] rounded-2xl h-10 text-xs font-semibold bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800"
+              id="palette-format-select"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="rounded-2xl border-neutral-200 dark:border-neutral-800">
+              <SelectItem value="hex">HEX</SelectItem>
+              <SelectItem value="rgb">RGB</SelectItem>
+              <SelectItem value="rgba">RGBA</SelectItem>
+              <SelectItem value="hsl">HSL</SelectItem>
+              <SelectItem value="hsla">HSLA</SelectItem>
+              <SelectItem value="cmyk">CMYK</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      {/* Palette Rows — one per row, full width */}
-      <div className="space-y-4">
+      {/* Palette Rows */}
+      <div className="space-y-6">
         {visiblePalettes.map((palette) => (
           <PaletteRow key={palette.title} palette={palette} format={format} />
         ))}
@@ -251,22 +263,22 @@ export default function PaletteShowcase() {
 
       {/* Show More / Less */}
       {allPalettes.length > 6 && (
-        <div className="flex justify-center">
+        <div className="flex justify-center pt-4">
           <Button
             variant="outline"
             onClick={() => setShowAll(!showAll)}
-            className="rounded-xl px-8 gap-2 h-11 text-sm"
+            className="rounded-2xl px-10 gap-2.5 h-12 text-[13px] font-bold border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all shadow-sm"
             id="show-more-palettes-btn"
           >
             {showAll ? (
               <>
                 <ChevronUp className="h-4 w-4" />
-                Show Less
+                Show Fewer Collections
               </>
             ) : (
               <>
                 <ChevronDown className="h-4 w-4" />
-                Show All {allPalettes.length} Palettes
+                Explore All {allPalettes.length} Collections
               </>
             )}
           </Button>

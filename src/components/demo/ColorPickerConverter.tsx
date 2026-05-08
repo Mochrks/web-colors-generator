@@ -27,7 +27,7 @@ interface ColorPickerConverterProps {
 }
 
 export default function ColorPickerConverter({ onColorChange }: ColorPickerConverterProps) {
-  const [colorData, setColorData] = useState<ColorData>(() => colorDataFromHsl(262, 67, 55));
+  const [colorData, setColorData] = useState<ColorData>(() => colorDataFromHsl(0, 0, 10));
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
   const [hexInput, setHexInput] = useState(colorData.hex);
   const [rgbInput, setRgbInput] = useState({
@@ -35,7 +35,6 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
     g: String(colorData.rgb.g),
     b: String(colorData.rgb.b),
   });
-  const [alphaInput, setAlphaInput] = useState("1");
   const [cmykInput, setCmykInput] = useState({
     c: String(colorData.cmyk.c),
     m: String(colorData.cmyk.m),
@@ -186,9 +185,8 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
     const r = parseInt(newRgb.r) || 0;
     const g = parseInt(newRgb.g) || 0;
     const b = parseInt(newRgb.b) || 0;
-    const a = parseFloat(alphaInput) || 1;
     if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
-      updateColor(colorDataFromRgba(r, g, b, a));
+      updateColor(colorDataFromRgba(r, g, b, 1));
     }
   };
 
@@ -225,24 +223,24 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
   ];
 
   return (
-    <div className="space-y-6 animate-slide-up" id="color-picker">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="space-y-8 animate-fade-in" id="color-picker">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* ============ LEFT: Visual Picker ============ */}
-        <Card className="glass-card overflow-hidden lg:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Pipette className="h-5 w-5 text-purple-500" />
-              Color Picker
+        <Card className="apple-card overflow-hidden lg:col-span-1 bg-white dark:bg-neutral-900 border-none">
+          <CardHeader className="pb-4 pt-6 px-6">
+            <CardTitle className="flex items-center gap-2.5 text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">
+              <Pipette className="h-4 w-4 text-neutral-500" />
+              Visual Picker
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-6 px-6 pb-8">
             {/* Color Canvas */}
-            <div className="relative rounded-xl overflow-hidden cursor-crosshair shadow-lg ring-1 ring-black/5 dark:ring-white/5">
+            <div className="relative rounded-2xl overflow-hidden cursor-crosshair shadow-sm border border-neutral-200/50 dark:border-neutral-800/50">
               <canvas
                 ref={canvasRef}
                 width={400}
                 height={220}
-                className="w-full h-[180px] sm:h-[220px]"
+                className="w-full h-[200px]"
                 onClick={(e) => handleCanvasInteraction(e)}
                 onMouseDown={(e) => {
                   setIsDragging(true);
@@ -253,12 +251,12 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
             </div>
 
             {/* Hue Slider */}
-            <div className="relative rounded-lg overflow-hidden cursor-pointer shadow-sm ring-1 ring-black/5 dark:ring-white/5">
+            <div className="relative rounded-full overflow-hidden cursor-pointer border border-neutral-200/50 dark:border-neutral-800/50">
               <canvas
                 ref={hueCanvasRef}
                 width={400}
-                height={20}
-                className="w-full h-5"
+                height={16}
+                className="w-full h-4"
                 onClick={(e) => handleHueInteraction(e)}
                 onMouseDown={(e) => {
                   setIsHueDragging(true);
@@ -269,7 +267,7 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
             </div>
 
             {/* HSL Sliders */}
-            <div className="space-y-2.5">
+            <div className="space-y-4">
               {[
                 { label: "Hue", value: colorData.hsl.h, max: 360, suffix: "°", key: "h" as const },
                 {
@@ -287,10 +285,12 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
                   key: "l" as const,
                 },
               ].map(({ label, value, max, suffix, key }) => (
-                <div key={key} className="space-y-1">
-                  <div className="flex justify-between">
-                    <Label className="text-[11px] font-medium text-muted-foreground">{label}</Label>
-                    <span className="text-[11px] font-mono text-muted-foreground">
+                <div key={key} className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                      {label}
+                    </Label>
+                    <span className="text-[11px] font-semibold text-neutral-600 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded-md">
                       {value}
                       {suffix}
                     </span>
@@ -309,73 +309,57 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
                   />
                 </div>
               ))}
-              <div className="space-y-1">
-                <div className="flex justify-between">
-                  <Label className="text-[11px] font-medium text-muted-foreground">Alpha</Label>
-                  <span className="text-[11px] font-mono text-muted-foreground">{alphaInput}</span>
-                </div>
-                <Slider
-                  min={0}
-                  max={1}
-                  step={0.01}
-                  value={[parseFloat(alphaInput)]}
-                  onValueChange={([v]) => {
-                    setAlphaInput(v.toFixed(2));
-                    updateColor(
-                      colorDataFromRgba(colorData.rgb.r, colorData.rgb.g, colorData.rgb.b, v)
-                    );
-                  }}
-                />
-              </div>
             </div>
 
             {/* Actions */}
-            <div className="flex gap-2">
+            <div className="flex gap-3 pt-2">
               <Button
                 onClick={handleRandomize}
                 variant="outline"
-                className="flex-1 rounded-xl h-9 text-xs"
+                className="flex-1 rounded-2xl h-10 text-[13px] font-medium border-neutral-200 dark:border-neutral-800"
                 id="randomize-btn"
               >
-                <RotateCw className="h-3.5 w-3.5 mr-1.5" />
-                Random
+                <RotateCw className="h-3.5 w-3.5 mr-2" />
+                Randomize
               </Button>
               <Button
                 onClick={handleSave}
                 variant="outline"
-                className="flex-1 rounded-xl h-9 text-xs"
+                className="flex-1 rounded-2xl h-10 text-[13px] font-medium border-neutral-200 dark:border-neutral-800"
                 id="save-color-btn"
               >
                 {saved ? (
-                  <Check className="h-3.5 w-3.5 mr-1.5 text-green-500" />
+                  <Check className="h-3.5 w-3.5 mr-2 text-green-500" />
                 ) : (
-                  <Bookmark className="h-3.5 w-3.5 mr-1.5" />
+                  <Bookmark className="h-3.5 w-3.5 mr-2" />
                 )}
-                {saved ? "Saved!" : "Save"}
+                {saved ? "Saved" : "Save Color"}
               </Button>
             </div>
           </CardContent>
         </Card>
 
         {/* ============ MIDDLE: Color Values & Converter ============ */}
-        <Card className="glass-card overflow-hidden lg:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Color Values</CardTitle>
+        <Card className="apple-card overflow-hidden lg:col-span-1 bg-white dark:bg-neutral-900 border-none">
+          <CardHeader className="pb-4 pt-6 px-6">
+            <CardTitle className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">
+              Color Values
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6 px-6 pb-8">
             {/* Big Preview */}
             <div
-              className="w-full h-24 rounded-xl shadow-xl transition-colors duration-300 flex items-end p-3 ring-1 ring-black/5 dark:ring-white/5"
+              className="w-full h-32 rounded-2xl shadow-sm transition-all duration-500 flex items-end p-4 border border-neutral-200/50 dark:border-neutral-800/50"
               style={{ backgroundColor: colorData.hex }}
             >
               <span
-                className="text-sm font-mono font-bold px-2.5 py-1 rounded-lg backdrop-blur-sm"
+                className="text-[15px] font-bold px-3 py-1.5 rounded-xl backdrop-blur-md border border-white/20 shadow-sm"
                 style={{
                   color: getTextColor(colorData.hex),
                   backgroundColor:
                     getTextColor(colorData.hex) === "#ffffff"
-                      ? "rgba(0,0,0,0.35)"
-                      : "rgba(255,255,255,0.35)",
+                      ? "rgba(0,0,0,0.2)"
+                      : "rgba(255,255,255,0.2)",
                 }}
               >
                 {colorData.hex.toUpperCase()}
@@ -383,53 +367,51 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
             </div>
 
             {/* All Formats with Copy */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               {formats.map(({ format, label }) => (
                 <TooltipProvider key={format}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div
-                        className="flex items-center gap-2 p-2 rounded-xl bg-muted/40 hover:bg-muted/70 transition-colors group cursor-pointer"
+                        className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200/30 dark:border-neutral-800/30 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all group cursor-pointer"
                         onClick={() => handleCopy(format)}
                       >
-                        <span className="text-[10px] font-bold text-muted-foreground w-10 shrink-0 uppercase">
+                        <span className="text-[10px] font-black text-neutral-400 w-10 shrink-0 uppercase tracking-widest">
                           {label}
                         </span>
-                        <code className="text-xs flex-1 truncate select-all">
+                        <code className="text-[13px] flex-1 truncate font-medium text-neutral-700 dark:text-neutral-300">
                           {formatColor(colorData, format)}
                         </code>
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                           {copiedFormat === format ? (
                             <Check className="h-3.5 w-3.5 text-green-500" />
                           ) : (
-                            <Copy className="h-3.5 w-3.5 text-muted-foreground" />
+                            <Copy className="h-3.5 w-3.5 text-neutral-400" />
                           )}
                         </div>
                       </div>
                     </TooltipTrigger>
-                    <TooltipContent>Click to copy {label}</TooltipContent>
+                    <TooltipContent side="right">Copy {label}</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               ))}
             </div>
 
             {/* Generated Shades */}
-            <div className="space-y-3">
+            <div className="space-y-4 pt-2">
               <div className="flex items-center gap-2">
-                <Palette className="h-4 w-4 text-purple-500" />
-                <span className="text-sm font-semibold">Auto Shades</span>
-                <span className="text-[10px] text-muted-foreground ml-auto">
-                  {shades.length} shades • Click to copy
+                <Palette className="h-4 w-4 text-neutral-400" />
+                <span className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">
+                  Shade Palette
                 </span>
               </div>
-              {/* Big shade strip */}
-              <div className="flex h-14 rounded-xl overflow-hidden shadow-lg ring-1 ring-black/5 dark:ring-white/10">
+              <div className="flex h-12 rounded-2xl overflow-hidden shadow-sm border border-neutral-200/50 dark:border-neutral-800/50">
                 {shades.map((shade, idx) => (
                   <TooltipProvider key={idx}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div
-                          className="flex-1 cursor-pointer relative group/shade transition-all hover:flex-[2.5] duration-300"
+                          className="flex-1 cursor-pointer relative group/shade transition-all hover:flex-[3] duration-500"
                           style={{ backgroundColor: shade.hex }}
                           onClick={() => handleCopy("hex")}
                         >
@@ -446,82 +428,57 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
                   </TooltipProvider>
                 ))}
               </div>
-              {/* Individual shade squares */}
-              <div className="grid grid-cols-5 sm:grid-cols-10 gap-1.5">
-                {shades.map((shade, idx) => (
-                  <TooltipProvider key={idx}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div
-                          className="text-center cursor-pointer group/sq"
-                          onClick={() => handleCopy("hex")}
-                        >
-                          <div
-                            className="w-full aspect-square rounded-lg shadow-sm color-swatch ring-1 ring-black/5 dark:ring-white/5 group-hover/sq:scale-110 transition-transform"
-                            style={{ backgroundColor: shade.hex }}
-                          />
-                          <code className="text-[7px] text-muted-foreground mt-0.5 block truncate leading-tight">
-                            {shade.hex}
-                          </code>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>Click to copy {shade.hex}</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ))}
-              </div>
             </div>
           </CardContent>
         </Card>
 
         {/* ============ RIGHT: Manual Input ============ */}
-        <Card className="glass-card overflow-hidden lg:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Input Color</CardTitle>
+        <Card className="apple-card overflow-hidden lg:col-span-1 bg-white dark:bg-neutral-900 border-none">
+          <CardHeader className="pb-4 pt-6 px-6">
+            <CardTitle className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">
+              Manual Input
+            </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-6 pb-8">
             <Tabs defaultValue="hex" className="w-full">
-              <TabsList className="grid grid-cols-4 w-full rounded-xl h-9">
-                <TabsTrigger value="hex" className="rounded-lg text-xs">
-                  HEX
-                </TabsTrigger>
-                <TabsTrigger value="rgb" className="rounded-lg text-xs">
-                  RGB
-                </TabsTrigger>
-                <TabsTrigger value="cmyk" className="rounded-lg text-xs">
-                  CMYK
-                </TabsTrigger>
-                <TabsTrigger value="paste" className="rounded-lg text-xs">
-                  Any
-                </TabsTrigger>
+              <TabsList className="grid grid-cols-4 w-full rounded-2xl bg-neutral-100 dark:bg-neutral-950 p-1 h-11 border border-neutral-200/50 dark:border-neutral-800/50">
+                {["hex", "rgb", "cmyk", "paste"].map((tab) => (
+                  <TabsTrigger
+                    key={tab}
+                    value={tab}
+                    className="rounded-xl text-[11px] font-bold uppercase tracking-wider"
+                  >
+                    {tab === "paste" ? "Any" : tab}
+                  </TabsTrigger>
+                ))}
               </TabsList>
 
-              <TabsContent value="hex" className="mt-3 space-y-3">
-                <div className="flex gap-2 items-center">
+              <TabsContent value="hex" className="mt-6 space-y-4">
+                <div className="flex gap-3 items-center">
                   <input
                     type="color"
                     value={colorData.hex}
                     onChange={(e) => handleHexChange(e.target.value)}
-                    className="w-10 h-10 rounded-xl border-0 cursor-pointer shrink-0"
+                    className="w-12 h-12 rounded-2xl border border-neutral-200 dark:border-neutral-800 cursor-pointer shrink-0 bg-transparent"
                   />
                   <Input
                     value={hexInput}
                     onChange={(e) => handleHexChange(e.target.value)}
-                    placeholder="#7c3aed"
-                    className="font-mono rounded-xl"
+                    placeholder="#000000"
+                    className="font-mono rounded-2xl h-12 text-[15px] bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800"
                     id="hex-input"
                   />
                 </div>
-                <p className="text-[10px] text-muted-foreground">
-                  Enter a hex color code (e.g. #FF5733, #ABC)
+                <p className="text-[11px] text-neutral-400 font-medium">
+                  Enter a hex color code (e.g. #000, #F5F5F7)
                 </p>
               </TabsContent>
 
-              <TabsContent value="rgb" className="mt-3 space-y-3">
-                <div className="grid grid-cols-3 gap-2">
+              <TabsContent value="rgb" className="mt-6 space-y-4">
+                <div className="grid grid-cols-3 gap-3">
                   {(["r", "g", "b"] as const).map((ch) => (
-                    <div key={ch}>
-                      <Label className="text-[10px] text-muted-foreground uppercase font-semibold">
+                    <div key={ch} className="space-y-2">
+                      <Label className="text-[10px] text-neutral-400 uppercase font-black tracking-widest pl-1">
                         {ch}
                       </Label>
                       <Input
@@ -530,20 +487,19 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
                         type="number"
                         min={0}
                         max={255}
-                        className="font-mono rounded-xl"
+                        className="font-mono rounded-2xl h-12 text-[15px] bg-neutral-50 dark:bg-neutral-950"
                         id={`rgb-${ch}-input`}
                       />
                     </div>
                   ))}
                 </div>
-                <p className="text-[10px] text-muted-foreground">Values: 0-255 for each channel</p>
               </TabsContent>
 
-              <TabsContent value="cmyk" className="mt-3 space-y-3">
+              <TabsContent value="cmyk" className="mt-6 space-y-4">
                 <div className="grid grid-cols-4 gap-2">
                   {(["c", "m", "y", "k"] as const).map((ch) => (
-                    <div key={ch}>
-                      <Label className="text-[10px] text-muted-foreground uppercase font-semibold">
+                    <div key={ch} className="space-y-2">
+                      <Label className="text-[10px] text-neutral-400 uppercase font-black tracking-widest pl-1">
                         {ch}
                       </Label>
                       <Input
@@ -552,44 +508,41 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
                         type="number"
                         min={0}
                         max={100}
-                        className="font-mono rounded-xl"
+                        className="font-mono rounded-2xl h-12 text-[14px] bg-neutral-50 dark:bg-neutral-950"
                         id={`cmyk-${ch}-input`}
                       />
                     </div>
                   ))}
                 </div>
-                <p className="text-[10px] text-muted-foreground">Values: 0-100% for each channel</p>
               </TabsContent>
 
-              <TabsContent value="paste" className="mt-3 space-y-3">
+              <TabsContent value="paste" className="mt-6 space-y-4">
                 <div className="flex gap-2">
                   <Input
                     value={pasteInput}
                     onChange={(e) => setPasteInput(e.target.value)}
-                    placeholder="Paste any color..."
-                    className="font-mono rounded-xl"
+                    placeholder="Paste color string..."
+                    className="font-mono rounded-2xl h-12 text-[14px] bg-neutral-50 dark:bg-neutral-950"
                     id="paste-input"
                     onKeyDown={(e) => e.key === "Enter" && handlePaste()}
                   />
-                  <Button onClick={handlePaste} className="rounded-xl shrink-0" id="paste-btn">
+                  <Button
+                    onClick={handlePaste}
+                    className="rounded-2xl h-12 px-6 font-semibold"
+                    id="paste-btn"
+                  >
                     Parse
                   </Button>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] text-muted-foreground font-semibold">
-                    Supported formats:
+                <div className="space-y-2">
+                  <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-widest pl-1">
+                    Examples
                   </p>
-                  <div className="flex flex-wrap gap-1">
-                    {[
-                      "#FF5733",
-                      "rgb(255,87,51)",
-                      "rgba(255,87,51,0.8)",
-                      "hsl(11,100%,60%)",
-                      "cmyk(0%,66%,80%,0%)",
-                    ].map((example) => (
+                  <div className="flex flex-wrap gap-2">
+                    {["rgb(0,0,0)", "hsl(220,10%,98%)", "rgba(0,0,0,0.5)"].map((example) => (
                       <code
                         key={example}
-                        className="text-[9px] px-1.5 py-0.5 rounded-md bg-muted/60 text-muted-foreground cursor-pointer hover:bg-muted transition-colors"
+                        className="text-[10px] px-3 py-1.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 cursor-pointer hover:bg-neutral-200 transition-colors border border-neutral-200/50 dark:border-neutral-800/50"
                         onClick={() => {
                           setPasteInput(example);
                           const parsed = parseColorString(example);
@@ -603,75 +556,6 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
                 </div>
               </TabsContent>
             </Tabs>
-
-            {/* Theme Preview Mini */}
-            <div className="mt-4 space-y-2">
-              <Label className="text-[11px] font-medium text-muted-foreground">Theme Preview</Label>
-              <div className="grid grid-cols-2 gap-2">
-                <div
-                  className="p-3 rounded-xl shadow-sm"
-                  style={{
-                    backgroundColor: `hsl(${colorData.hsl.h}, ${colorData.hsl.s}%, 96%)`,
-                  }}
-                >
-                  <div
-                    className="text-xs font-bold mb-0.5"
-                    style={{
-                      color: `hsl(${colorData.hsl.h}, ${colorData.hsl.s}%, 20%)`,
-                    }}
-                  >
-                    Light
-                  </div>
-                  <div
-                    className="text-[10px]"
-                    style={{
-                      color: `hsl(${colorData.hsl.h}, ${colorData.hsl.s}%, 35%)`,
-                    }}
-                  >
-                    Sample text
-                  </div>
-                  <div
-                    className="mt-1.5 px-2 py-0.5 rounded text-[9px] text-white inline-block font-medium"
-                    style={{
-                      backgroundColor: colorData.hex,
-                    }}
-                  >
-                    Button
-                  </div>
-                </div>
-                <div
-                  className="p-3 rounded-xl shadow-sm"
-                  style={{
-                    backgroundColor: `hsl(${colorData.hsl.h}, ${colorData.hsl.s}%, 12%)`,
-                  }}
-                >
-                  <div
-                    className="text-xs font-bold mb-0.5"
-                    style={{
-                      color: `hsl(${colorData.hsl.h}, ${colorData.hsl.s}%, 90%)`,
-                    }}
-                  >
-                    Dark
-                  </div>
-                  <div
-                    className="text-[10px]"
-                    style={{
-                      color: `hsl(${colorData.hsl.h}, ${colorData.hsl.s}%, 75%)`,
-                    }}
-                  >
-                    Sample text
-                  </div>
-                  <div
-                    className="mt-1.5 px-2 py-0.5 rounded text-[9px] text-white inline-block font-medium"
-                    style={{
-                      backgroundColor: `hsl(${colorData.hsl.h}, ${colorData.hsl.s}%, 60%)`,
-                    }}
-                  >
-                    Button
-                  </div>
-                </div>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>

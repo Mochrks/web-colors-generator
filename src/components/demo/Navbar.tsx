@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Palette } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 
 export function Navbar() {
   const [isDark, setIsDark] = useState(() => {

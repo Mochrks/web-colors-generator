@@ -2,7 +2,16 @@
 
 import { useState, useLayoutEffect, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Pipette, Sparkles, Paintbrush, Eye, Blend, Image, Bookmark } from "lucide-react";
+import {
+  Pipette,
+  Sparkles,
+  Paintbrush,
+  Eye,
+  Blend,
+  Image as ImageIcon,
+  Bookmark,
+  ChevronsRight,
+} from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ColorPickerConverter from "./ColorPickerConverter";
@@ -13,6 +22,7 @@ import ColorBlender from "./ColorBlender";
 import ImageColorExtractor from "./ImageColorExtractor";
 import PaletteShowcase from "./PaletteShowcase";
 import SavedColors from "./SavedColors";
+import LightTunnel from "./LightTunnel";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -22,7 +32,7 @@ const tools = [
   { id: "gradient", label: "Gradient", icon: Paintbrush, desc: "Create gradients" },
   { id: "contrast", label: "Contrast", icon: Eye, desc: "Check accessibility" },
   { id: "blender", label: "Blender", icon: Blend, desc: "Blend two colors" },
-  { id: "extract", label: "Extractor", icon: Image, desc: "Extract from image" },
+  { id: "extract", label: "Extractor", icon: ImageIcon, desc: "Extract from image" },
   { id: "saved", label: "Saved", icon: Bookmark, desc: "Your saved colors" },
 ];
 
@@ -34,9 +44,9 @@ export default function ColorGenerator() {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      tl.to(".hero-badge", { opacity: 1, y: 0, duration: 0.8, startAt: { y: 10 } })
-        .to(".hero-title", { opacity: 1, y: 0, duration: 1, startAt: { y: 20 } }, "-=0.6")
+      tl.to(".hero-title", { opacity: 1, y: 0, duration: 1, startAt: { y: 20 } })
         .to(".hero-description", { opacity: 1, y: 0, duration: 0.8, startAt: { y: 10 } }, "-=0.6")
+        .to(".hero-image-box", { opacity: 1, y: 0, duration: 1, startAt: { y: 30 } }, "-=0.4")
         .to(".hero-stats", { opacity: 1, y: 0, duration: 0.8, startAt: { y: 10 } }, "-=0.6");
 
       gsap.to(heroRef.current, {
@@ -74,22 +84,52 @@ export default function ColorGenerator() {
         className="relative text-center space-y-10 py-20 sm:py-32"
         id="hero-section"
       >
-        <div className="relative z-10 space-y-8">
-          <div className="hero-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-500 text-[10px] font-bold uppercase tracking-[0.2em] opacity-0">
-            <Sparkles className="h-3 w-3" />
-            <span>Design With Perfect Colors</span>
-          </div>
-
-          <h1 className="hero-title text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-neutral-900 dark:text-white opacity-0">
-            Professional color
+        <div className="relative z-10 space-y-12">
+          <h1 className="hero-title text-5xl sm:text-7xl lg:text-[5.5rem] font-medium tracking-tight text-neutral-500 dark:text-neutral-400 opacity-0 leading-[1.1]">
+            Generate
+            <span className="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 mx-2 sm:mx-4 rounded-full bg-gradient-to-r from-rose-400 to-fuchsia-500 text-white shadow-xl shadow-fuchsia-500/20 align-middle">
+              <ChevronsRight className="w-8 h-8 sm:w-12 sm:h-12" />
+            </span>
+            Your
             <br />
-            <span className="text-neutral-400 dark:text-neutral-500">made simple.</span>
+            <span className="font-bold text-neutral-900 dark:text-white">
+              Perfect Color Palette
+            </span>
           </h1>
 
-          <p className="hero-description text-neutral-500 dark:text-neutral-400 max-w-xl mx-auto text-lg sm:text-xl leading-relaxed font-medium opacity-0">
-            A minimalist workspace for designers to pick, harmonize, and generate stunning colors
-            with precision and ease.
-          </p>
+          <div className="hero-image-box w-full max-w-5xl mx-auto overflow-hidden rounded-[2rem] sm:rounded-[3rem] border border-neutral-200/50 dark:border-neutral-800/50 shadow-2xl opacity-0">
+            <div style={{ width: "100%", height: "250px", position: "relative" }}>
+              <LightTunnel
+                cableColor="#A855F7"
+                pulseColor="#A855F7"
+                tunnelColor="#5227FF"
+                tunnelOpacity={0}
+                speed={0.1}
+                pulseSpeed={2}
+                pulseLength={0.28}
+                pulseBlend={1}
+                pulseWidth={1}
+                cableCount={20}
+                thickness={0.35}
+                rimWidth={0.15}
+                waviness={0.3}
+                sway={0.5}
+                size={1}
+                centerX={0}
+                centerY={0}
+                glow={1}
+                fadeNear={0.5}
+                fadeFar={2}
+                brightness={1}
+                colorVariance
+                grain
+                grainIntensity={0.05}
+                opacity={1}
+                mouseInteraction
+                mouseStrength={0.1}
+              />
+            </div>
+          </div>
 
           {/* Quick stats with cards */}
           <div className="hero-stats flex flex-wrap justify-center gap-4 pt-4 opacity-0">

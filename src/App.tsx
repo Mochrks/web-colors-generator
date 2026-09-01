@@ -1,8 +1,8 @@
-import "./App.css";
+import "./styles/App.css";
 import ColorGenerator from "./components/demo/ColorGeneration";
 import { Footer } from "./components/demo/Footer";
 import { Navbar } from "./components/demo/Navbar";
-import SmoothScrollProvider from "./components/SmoothScrollProvider";
+import SmoothScrollProvider from "./components/demo/SmoothScrollProvider";
 
 function App() {
   return (

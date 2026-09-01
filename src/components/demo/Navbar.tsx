@@ -29,20 +29,14 @@ export function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 apple-blur border-b border-neutral-200/50 dark:border-neutral-800/50">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="flex items-center justify-between h-14">
-          <div className="flex items-center gap-3 group cursor-pointer active:scale-95 transition-all duration-300">
-            <div className="w-8 h-8 rounded-lg bg-neutral-900 dark:bg-white flex items-center justify-center transition-transform duration-500 group-hover:rotate-6">
-              <Palette className="h-4 w-4 text-white dark:text-black" />
-            </div>
-            <a
-              href="/"
-              className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-white"
-            >
-              ColorGen
-              <span className="text-[10px] font-bold text-neutral-400 ml-1.5 align-top tracking-widest">
-                CORE
-              </span>
-            </a>
-          </div>
+          <a
+            href="/"
+            className="flex items-center gap-3 group cursor-pointer active:scale-95 transition-all duration-300"
+          >
+            <span className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
+              Colorgen.io
+            </span>
+          </a>
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"

@@ -9,12 +9,15 @@ html.lenis,
 html.lenis body {
   height: auto;
 }
+
 .lenis.lenis-smooth {
   scroll-behavior: auto !important;
 }
+
 .lenis.lenis-smooth [data-lenis-prevent] {
   overscroll-behavior: contain;
 }
+
 .lenis.lenis-stopped {
   overflow: hidden;
 }
@@ -24,6 +27,7 @@ html.lenis body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
@@ -53,24 +57,24 @@ html.lenis body {
   }
 
   .dark {
-    --background: 0 0% 3.9%;
+    --background: 0 0% 0.8%;
     --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
+    --card: 0 0% 5%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
+    --popover: 0 0% 5%;
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
     --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
+    --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 63.9%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 0 0% 10%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
+    --border: 0 0% 10%;
+    --input: 0 0% 10%;
     --ring: 0 0% 83.1%;
   }
 }
@@ -79,8 +83,10 @@ html.lenis body {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
+    background-color: #020202 !important;
     font-family:
       "Inter",
       system-ui,
@@ -89,6 +95,7 @@ html.lenis body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
   code,
   .font-mono {
     font-family: "JetBrains Mono", ui-monospace, monospace;
@@ -101,7 +108,12 @@ html.lenis body {
   }
 
   .apple-card {
-    @apply bg-white dark:bg-neutral-900 border border-neutral-200/50 dark:border-neutral-800/50 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all duration-500 rounded-3xl;
+    @apply bg-white dark:bg-neutral-900 border border-neutral-200/50 dark:border-neutral-800/50 transition-all duration-500 rounded-3xl;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .apple-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   }
 
   .glass-panel {
@@ -127,6 +139,7 @@ html.lenis body {
     opacity: 0.6;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.8;
     transform: scale(1.05);
@@ -138,6 +151,7 @@ html.lenis body {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -148,9 +162,11 @@ html.lenis body {
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   @apply bg-transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   @apply bg-neutral-300 dark:bg-neutral-700 rounded-full border-[2px] border-solid border-transparent bg-clip-padding;
 }
@@ -160,6 +176,7 @@ html.lenis body {
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
 }
+
 .color-swatch:hover {
   transform: scale(1.05);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);

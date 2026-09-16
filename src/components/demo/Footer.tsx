@@ -6,7 +6,7 @@ export function Footer() {
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-[13px] text-neutral-500 dark:text-neutral-400">
-            <span className="font-medium">© {new Date().getFullYear()} Colorgen.io</span>
+            <span className="font-medium">© {new Date().getFullYear()} toneshift.io</span>
             <span className="hidden sm:inline text-neutral-300 dark:text-neutral-700">|</span>
             <span className="flex items-center gap-1.5">
               created by

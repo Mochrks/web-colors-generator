@@ -1,0 +1,59 @@
+/* ============================================================
+   ColorWheelCanvas — Morphing chromatic aurora blobs
+   ============================================================ */
+
+.color-wheel-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.color-wheel-canvas {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: block;
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: #020202;
+  /* layered glow ring */
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 8px 48px rgba(0, 0, 0, 0.6),
+    0 0 80px rgba(168, 85, 247, 0.08);
+  cursor: crosshair;
+}
+
+/* tiny info row */
+.color-wheel-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.22);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  pointer-events: none;
+  user-select: none;
+}
+
+.color-wheel-badge .dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .color-wheel-wrapper {
+    max-width: 320px;
+  }
+}

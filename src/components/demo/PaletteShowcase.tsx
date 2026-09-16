@@ -48,34 +48,33 @@ import {
 
 interface PaletteSection {
   title: string;
-  emoji: string;
   colors: Record<string, string>;
 }
 
 const allPalettes: PaletteSection[] = [
-  { title: "Tailwind CSS", emoji: "🎯", colors: initialTailwindColors },
-  { title: "Pastel", emoji: "🌸", colors: pastelColors },
-  { title: "Retro", emoji: "📻", colors: retroColors },
-  { title: "Vintage", emoji: "🏛️", colors: vintageColors },
-  { title: "Neon", emoji: "💡", colors: neonColors },
-  { title: "Gold & Metallic", emoji: "✨", colors: goldColors },
-  { title: "Warm", emoji: "🔥", colors: warmColors },
-  { title: "Cold", emoji: "❄️", colors: coldColors },
-  { title: "Summer", emoji: "☀️", colors: summerColors },
-  { title: "Sunset", emoji: "🌅", colors: sunsetColors },
-  { title: "Sky", emoji: "🌤️", colors: skyColors },
-  { title: "Sea & Ocean", emoji: "🌊", colors: seaColors },
-  { title: "Coffee", emoji: "☕", colors: coffeeColors },
-  { title: "Cream", emoji: "🍦", colors: creamColors },
-  { title: "Kids", emoji: "🧸", colors: kidsColors },
-  { title: "Rainbow", emoji: "🌈", colors: rainbowColors },
-  { title: "Space", emoji: "🚀", colors: spaceXColors },
-  { title: "Galaxy", emoji: "🌌", colors: galaxyColors },
-  { title: "Cyberpunk", emoji: "🤖", colors: cyberpunkColors },
-  { title: "Wedding", emoji: "💒", colors: weddingColors },
-  { title: "Halloween", emoji: "🎃", colors: halloweenColors },
-  { title: "Christmas", emoji: "🎄", colors: christmasColors },
-  { title: "Ramadhan", emoji: "🌙", colors: ramadhanColors },
+  { title: "Tailwind CSS", colors: initialTailwindColors },
+  { title: "Pastel", colors: pastelColors },
+  { title: "Retro", colors: retroColors },
+  { title: "Vintage", colors: vintageColors },
+  { title: "Neon", colors: neonColors },
+  { title: "Gold & Metallic", colors: goldColors },
+  { title: "Warm", colors: warmColors },
+  { title: "Cold", colors: coldColors },
+  { title: "Summer", colors: summerColors },
+  { title: "Sunset", colors: sunsetColors },
+  { title: "Sky", colors: skyColors },
+  { title: "Sea & Ocean", colors: seaColors },
+  { title: "Coffee", colors: coffeeColors },
+  { title: "Cream", colors: creamColors },
+  { title: "Kids", colors: kidsColors },
+  { title: "Rainbow", colors: rainbowColors },
+  { title: "Space", colors: spaceXColors },
+  { title: "Galaxy", colors: galaxyColors },
+  { title: "Cyberpunk", colors: cyberpunkColors },
+  { title: "Wedding", colors: weddingColors },
+  { title: "Halloween", colors: halloweenColors },
+  { title: "Christmas", colors: christmasColors },
+  { title: "Ramadhan", colors: ramadhanColors },
 ];
 
 function PaletteRow({ palette, format }: { palette: PaletteSection; format: ColorFormat }) {
@@ -92,12 +91,29 @@ function PaletteRow({ palette, format }: { palette: PaletteSection; format: Colo
     <Card className="apple-card overflow-hidden bg-white dark:bg-neutral-900 border-none">
       <CardContent className="p-6">
         {/* Palette Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-xl">
-            {palette.emoji}
+        <div className="flex items-center gap-4 mb-6">
+          {/* Mini swatch dots — first 6 colors of the palette */}
+          <div className="flex items-center gap-1 shrink-0">
+            {Object.values(palette.colors)
+              .slice(0, 6)
+              .map((hex, i) => (
+                <span
+                  key={i}
+                  className="block rounded-full border border-white/10"
+                  style={{
+                    backgroundColor: hex,
+                    width: i === 0 ? 18 : 12,
+                    height: i === 0 ? 18 : 12,
+                    marginLeft: i === 0 ? 0 : -4,
+                    zIndex: 6 - i,
+                    position: "relative",
+                    boxShadow: "0 1px 4px rgba(0,0,0,0.4)",
+                  }}
+                />
+              ))}
           </div>
           <div>
-            <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100">
+            <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 leading-tight">
               {palette.title}
             </h3>
             <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-0.5">

@@ -23,6 +23,8 @@ import ImageColorExtractor from "./ImageColorExtractor";
 import PaletteShowcase from "./PaletteShowcase";
 import SavedColors from "./SavedColors";
 import LightTunnel from "./LightTunnel";
+import GradualBlur from "./GradualBlur";
+import FoldText from "./FoldText";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -42,13 +44,6 @@ export default function ColorGenerator() {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-      tl.to(".hero-title", { opacity: 1, y: 0, duration: 1, startAt: { y: 20 } })
-        .to(".hero-description", { opacity: 1, y: 0, duration: 0.8, startAt: { y: 10 } }, "-=0.6")
-        .to(".hero-image-box", { opacity: 1, y: 0, duration: 1, startAt: { y: 30 } }, "-=0.4")
-        .to(".hero-stats", { opacity: 1, y: 0, duration: 0.8, startAt: { y: 10 } }, "-=0.6");
-
       gsap.to(heroRef.current, {
         scrollTrigger: {
           trigger: heroRef.current,
@@ -56,20 +51,8 @@ export default function ColorGenerator() {
           end: "bottom top",
           scrub: true,
         },
-        y: 50,
+        y: 60,
         opacity: 0,
-      });
-
-      gsap.from(".stat-item", {
-        opacity: 0,
-        y: 20,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: ".hero-stats",
-          start: "top 90%",
-        },
       });
     }, heroRef);
 
@@ -77,143 +60,169 @@ export default function ColorGenerator() {
   }, []);
 
   return (
-    <div className="max-w-[1200px] mx-auto px-6 space-y-24">
-      {/* ======== HERO ======== */}
+    <div className="w-full">
+      {/* ══════════════════════════ HERO ══════════════════════ */}
       <div
         ref={heroRef}
-        className="relative text-center space-y-10 py-20 sm:py-32"
+        className="relative w-full flex flex-col items-center justify-center text-center min-h-[88vh] py-28 px-6 overflow-hidden bg-[#020202]"
         id="hero-section"
       >
-        <div className="relative z-10 space-y-12">
-          <h1 className="hero-title text-5xl sm:text-7xl lg:text-[5.5rem] font-medium tracking-tight text-neutral-500 dark:text-neutral-400 opacity-0 leading-[1.1]">
-            Generate
-            <span className="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 mx-2 sm:mx-4 rounded-full bg-gradient-to-r from-rose-400 to-fuchsia-500 text-white shadow-xl shadow-fuchsia-500/20 align-middle">
-              <ChevronsRight className="w-8 h-8 sm:w-12 sm:h-12" />
+        {/* WebGL bg */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+          <div style={{ width: "100%", height: "100%", position: "relative" }}>
+            <LightTunnel
+              cableColor="#A855F7"
+              pulseColor="#A855F7"
+              tunnelColor="#5227FF"
+              tunnelOpacity={0}
+              speed={0.1}
+              pulseSpeed={2}
+              pulseLength={0.28}
+              pulseBlend={1}
+              pulseWidth={1}
+              cableCount={20}
+              thickness={0.35}
+              rimWidth={0.15}
+              waviness={0.3}
+              sway={0.5}
+              size={1.5}
+              centerX={0}
+              centerY={0}
+              glow={1}
+              fadeNear={0.5}
+              fadeFar={2}
+              brightness={1}
+              colorVariance
+              grain
+              grainIntensity={0.05}
+              opacity={0.8}
+              mouseInteraction
+              mouseStrength={0.1}
+            />
+          </div>
+          <div
+            className="absolute inset-x-0 bottom-0 h-[60vh] pointer-events-none z-[5]"
+            style={{
+              background:
+                "linear-gradient(to top, #020202 0%, #020202 20%, rgba(2,2,2,0.88) 48%, rgba(2,2,2,0.3) 74%, transparent 100%)",
+            }}
+          />
+          <GradualBlur preset="bottom" height="28vh" zIndex={10} className="pointer-events-none" />
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center max-w-5xl mx-auto">
+          {/* Headline only */}
+          <h1 className="text-center leading-[0.96] tracking-tight">
+            {/* Line 1 — "Generate >> Your" */}
+            <span className="block text-neutral-500 font-medium text-[clamp(2.6rem,8vw,6rem)]">
+              <FoldText
+                text="Generate"
+                splitBy="char"
+                hinge="top"
+                trigger="mount"
+                duration={0.52}
+                stagger={0.036}
+                fontSize="inherit"
+                fontWeight="inherit"
+                color="inherit"
+              />
+              <span className="inline-flex items-center justify-center px-4 py-2 mx-3 rounded-full bg-gradient-to-r from-rose-400 to-fuchsia-500 text-white shadow-xl shadow-fuchsia-500/25 align-middle">
+                <ChevronsRight className="w-[0.7em] h-[0.7em]" />
+              </span>
+              <FoldText
+                text="Your"
+                splitBy="char"
+                hinge="top"
+                trigger="mount"
+                duration={0.52}
+                stagger={0.036}
+                fontSize="inherit"
+                fontWeight="inherit"
+                color="inherit"
+              />
             </span>
-            Your
-            <br />
-            <span className="font-bold text-neutral-900 dark:text-white">
-              Perfect Color Palette
+            {/* Line 2 — "Perfect Color Palette" white bold */}
+            <span className="block text-white font-extrabold text-[clamp(2.6rem,8vw,6rem)] mt-1">
+              <FoldText
+                text="Perfect Color Palette"
+                splitBy="word"
+                hinge="bottom"
+                trigger="mount"
+                duration={0.68}
+                stagger={0.09}
+                ease="power4.out"
+                fontSize="inherit"
+                fontWeight="inherit"
+                color="inherit"
+              />
             </span>
           </h1>
-
-          <div className="hero-image-box w-full max-w-5xl mx-auto overflow-hidden rounded-[2rem] sm:rounded-[3rem] border border-neutral-200/50 dark:border-neutral-800/50 shadow-2xl opacity-0">
-            <div style={{ width: "100%", height: "250px", position: "relative" }}>
-              <LightTunnel
-                cableColor="#A855F7"
-                pulseColor="#A855F7"
-                tunnelColor="#5227FF"
-                tunnelOpacity={0}
-                speed={0.1}
-                pulseSpeed={2}
-                pulseLength={0.28}
-                pulseBlend={1}
-                pulseWidth={1}
-                cableCount={20}
-                thickness={0.35}
-                rimWidth={0.15}
-                waviness={0.3}
-                sway={0.5}
-                size={1}
-                centerX={0}
-                centerY={0}
-                glow={1}
-                fadeNear={0.5}
-                fadeFar={2}
-                brightness={1}
-                colorVariance
-                grain
-                grainIntensity={0.05}
-                opacity={1}
-                mouseInteraction
-                mouseStrength={0.1}
-              />
-            </div>
-          </div>
-
-          {/* Quick stats with cards */}
-          <div className="hero-stats flex flex-wrap justify-center gap-4 pt-4 opacity-0">
-            {[
-              { label: "Formats", value: "6+" },
-              { label: "Palettes", value: "23k" },
-              { label: "Tools", value: "7" },
-              { label: "Harmonies", value: "5" },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className="stat-item min-w-[120px] p-6 rounded-3xl apple-card bg-white dark:bg-neutral-950"
-              >
-                <div className="text-2xl font-bold text-neutral-900 dark:text-white mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
-      {/* ======== TOOLS SECTION ======== */}
-      <section id="tools-section" className="space-y-12" data-animate>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="sticky top-14 z-40 py-6 apple-blur -mx-6 px-6">
-            <div className="max-w-fit mx-auto overflow-x-auto scrollbar-hide">
-              <TabsList className="inline-flex gap-1 p-1 rounded-2xl bg-neutral-100 dark:bg-neutral-900/50 border border-neutral-200/50 dark:border-neutral-800/50 h-auto">
-                {tools.map(({ id, label, icon: Icon }) => (
-                  <TabsTrigger
-                    key={id}
-                    value={id}
-                    className="rounded-xl gap-2 px-5 py-2.5 text-xs font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-800 data-[state=active]:shadow-sm transition-all text-neutral-500 data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white"
-                  >
-                    <Icon className="h-3.5 w-3.5" />
-                    {label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+      {/* ═══════════════════ MAIN CONTENT ═════════════════════ */}
+      <div className="max-w-[1200px] mx-auto px-6 space-y-24 mt-12 sm:mt-20">
+        {/* TOOLS */}
+        <section id="tools-section" className="space-y-12" data-animate>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="sticky top-0 z-40 py-4 bg-[#020202]/80 backdrop-blur-xl border-b border-white/[0.05] -mx-6 px-6">
+              <div className="w-full overflow-x-auto scrollbar-hide -mb-4 pb-4">
+                <TabsList className="flex w-max mx-auto sm:w-auto sm:justify-center gap-1 p-1 rounded-2xl bg-white/[0.05] border border-white/[0.08] h-auto min-w-full sm:min-w-0">
+                  {tools.map(({ id, label, icon: Icon }) => (
+                    <TabsTrigger
+                      key={id}
+                      value={id}
+                      className="rounded-xl gap-2 px-4 py-2.5 sm:px-5 sm:py-2.5 text-xs font-semibold data-[state=active]:bg-white/10 data-[state=active]:shadow-sm transition-all text-neutral-500 data-[state=active]:text-white whitespace-nowrap"
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      {label}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </div>
             </div>
-          </div>
 
-          <div className="mt-8">
-            <TabsContent value="picker" className="mt-0 animate-fade-in outline-none">
-              <ColorPickerConverter />
-            </TabsContent>
-            <TabsContent value="harmony" className="mt-0 animate-fade-in outline-none">
-              <ColorHarmony />
-            </TabsContent>
-            <TabsContent value="gradient" className="mt-0 animate-fade-in outline-none">
-              <GradientGenerator />
-            </TabsContent>
-            <TabsContent value="contrast" className="mt-0 animate-fade-in outline-none">
-              <ContrastChecker />
-            </TabsContent>
-            <TabsContent value="blender" className="mt-0 animate-fade-in outline-none">
-              <ColorBlender />
-            </TabsContent>
-            <TabsContent value="extract" className="mt-0 animate-fade-in outline-none">
-              <ImageColorExtractor />
-            </TabsContent>
-            <TabsContent value="saved" className="mt-0 animate-fade-in outline-none">
-              <SavedColors />
-            </TabsContent>
-          </div>
-        </Tabs>
-      </section>
+            <div className="mt-8">
+              <TabsContent value="picker" className="mt-0 animate-fade-in outline-none">
+                <ColorPickerConverter />
+              </TabsContent>
+              <TabsContent value="harmony" className="mt-0 animate-fade-in outline-none">
+                <ColorHarmony />
+              </TabsContent>
+              <TabsContent value="gradient" className="mt-0 animate-fade-in outline-none">
+                <GradientGenerator />
+              </TabsContent>
+              <TabsContent value="contrast" className="mt-0 animate-fade-in outline-none">
+                <ContrastChecker />
+              </TabsContent>
+              <TabsContent value="blender" className="mt-0 animate-fade-in outline-none">
+                <ColorBlender />
+              </TabsContent>
+              <TabsContent value="extract" className="mt-0 animate-fade-in outline-none">
+                <ImageColorExtractor />
+              </TabsContent>
+              <TabsContent value="saved" className="mt-0 animate-fade-in outline-none">
+                <SavedColors />
+              </TabsContent>
+            </div>
+          </Tabs>
+        </section>
 
-      {/* ======== DIVIDER ======== */}
-      <div className="flex items-center gap-8 py-12" data-animate>
-        <div className="flex-1 h-px bg-neutral-200 dark:bg-neutral-800" />
-        <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-400">
-          Featured Collections
-        </span>
-        <div className="flex-1 h-px bg-neutral-200 dark:bg-neutral-800" />
+        {/* DIVIDER */}
+        <div className="flex items-center gap-8 py-12" data-animate>
+          <div className="flex-1 h-px bg-white/[0.06]" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-600">
+            Featured Collections
+          </span>
+          <div className="flex-1 h-px bg-white/[0.06]" />
+        </div>
+
+        {/* PALETTES */}
+        <section id="palettes-section" className="pb-24" data-animate>
+          <PaletteShowcase />
+        </section>
       </div>
-
-      {/* ======== PALETTES SECTION ======== */}
-      <section id="palettes-section" className="pb-24" data-animate>
-        <PaletteShowcase />
-      </section>
     </div>
   );
 }

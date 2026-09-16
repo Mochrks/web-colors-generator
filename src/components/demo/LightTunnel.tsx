@@ -294,7 +294,7 @@ const LightTunnel: React.FC<LightTunnelProps> = ({
     ro.observe(container);
     setSize();
 
-    let currentMouse: [number, number] = [0.5, 0.5];
+    const currentMouse: [number, number] = [0.5, 0.5];
     let targetMouse: [number, number] = [0.5, 0.5];
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -346,7 +346,8 @@ const LightTunnel: React.FC<LightTunnelProps> = ({
     const io = new IntersectionObserver(
       ([entry]) => {
         isVisible = entry.isIntersecting;
-        isVisible ? tryStart() : tryStop();
+        if (isVisible) tryStart();
+        else tryStop();
       },
       { threshold: 0 }
     );
@@ -354,7 +355,8 @@ const LightTunnel: React.FC<LightTunnelProps> = ({
 
     const onVisibility = () => {
       isPageVisible = !document.hidden;
-      isPageVisible ? tryStart() : tryStop();
+      if (isPageVisible) tryStart();
+      else tryStop();
     };
     document.addEventListener("visibilitychange", onVisibility);
 
@@ -370,7 +372,9 @@ const LightTunnel: React.FC<LightTunnelProps> = ({
       ctxMap.delete(container);
       try {
         container.removeChild(canvas);
-      } catch {}
+      } catch {
+        // ignore
+      }
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, []);
@@ -384,7 +388,7 @@ const LightTunnel: React.FC<LightTunnelProps> = ({
     const ctx = ctxMap.get(container);
     if (!ctx) return;
     const { program } = ctx;
-    const u = program.uniforms as Record<string, { value: any }>;
+    const u = program.uniforms as Record<string, { value: unknown }>;
 
     u.uSpeed.value = speed;
     u.uFlowDir.value = flowDirection === "outward" ? -1.0 : 1.0;

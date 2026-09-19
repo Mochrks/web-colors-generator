@@ -1,6 +1,4 @@
-"use client";
-
-import { useState, useLayoutEffect, useRef } from "react";
+import { useState, useLayoutEffect, useRef, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Pipette,
@@ -25,22 +23,43 @@ import SavedColors from "./SavedColors";
 import LightTunnel from "./LightTunnel";
 import GradualBlur from "./GradualBlur";
 import FoldText from "./FoldText";
+import FolderFloat from "./FolderFloat";
+import { useLenis } from "./SmoothScrollProvider";
+import {
+  FOLDER_FLOAT_ITEMS,
+  FOLDER_FLOAT_LABEL,
+  FOLDER_FLOAT_SUBLABEL,
+  FOLDER_FLOAT_CONFIG,
+  LIGHT_TUNNEL_CONFIG,
+} from "@/constants";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const tools = [
-  { id: "picker", label: "Color Picker", icon: Pipette, desc: "Pick & convert colors" },
-  { id: "harmony", label: "Harmony", icon: Sparkles, desc: "Generate harmonies" },
-  { id: "gradient", label: "Gradient", icon: Paintbrush, desc: "Create gradients" },
-  { id: "contrast", label: "Contrast", icon: Eye, desc: "Check accessibility" },
-  { id: "blender", label: "Blender", icon: Blend, desc: "Blend two colors" },
-  { id: "extract", label: "Extractor", icon: ImageIcon, desc: "Extract from image" },
-  { id: "saved", label: "Saved", icon: Bookmark, desc: "Your saved colors" },
+  { id: "picker", label: "Color Picker", icon: Pipette },
+  { id: "harmony", label: "Harmony", icon: Sparkles },
+  { id: "gradient", label: "Gradient", icon: Paintbrush },
+  { id: "contrast", label: "Contrast", icon: Eye },
+  { id: "blender", label: "Blender", icon: Blend },
+  { id: "extract", label: "Extractor", icon: ImageIcon },
+  { id: "saved", label: "Saved", icon: Bookmark },
 ];
+
+const FOLDER_TAB_MAP: Record<string, string> = {
+  "Pick & convert colors": "picker",
+  "Generate harmonies": "harmony",
+  "Build gradients": "gradient",
+  "Check contrast (WCAG)": "contrast",
+  "Blend two colors": "blender",
+  "Extract from image": "extract",
+};
 
 export default function ColorGenerator() {
   const [activeTab, setActiveTab] = useState("picker");
+  const [tabNavVisible, setTabNavVisible] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
+  const toolsSectionRef = useRef<HTMLDivElement>(null);
+  const lenis = useLenis();
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -59,47 +78,79 @@ export default function ColorGenerator() {
     return () => ctx.revert();
   }, []);
 
+  useEffect(() => {
+    const section = toolsSectionRef.current;
+    if (!section) return;
+
+    const trigger = ScrollTrigger.create({
+      trigger: section,
+      start: "top 80%",
+      onEnter: () => setTabNavVisible(true),
+      onLeaveBack: () => setTabNavVisible(false),
+    });
+
+    return () => trigger.kill();
+  }, []);
+
+  const scrollToTools = () => {
+    const target = toolsSectionRef.current;
+    if (!target) return;
+    if (lenis) {
+      lenis.scrollTo(target, { offset: -60, duration: 1.4 });
+    } else {
+      target.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleFolderSelect = (value: string, index: number) => {
+    const tab = FOLDER_TAB_MAP[value];
+    if (tab) {
+      setActiveTab(tab);
+      scrollToTools();
+    }
+    console.log(value, index);
+  };
+
   return (
     <div className="w-full">
-      {/* ══════════════════════════ HERO ══════════════════════ */}
       <div
         ref={heroRef}
-        className="relative w-full flex flex-col items-center justify-center text-center min-h-[88vh] py-28 px-6 overflow-hidden bg-[#020202]"
+        className="relative w-full flex flex-col items-center justify-center text-center min-h-[88vh] py-28 px-6 bg-[#020202]"
         id="hero-section"
       >
-        {/* WebGL bg */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <div style={{ width: "100%", height: "100%", position: "relative" }}>
             <LightTunnel
-              cableColor="#A855F7"
-              pulseColor="#A855F7"
-              tunnelColor="#5227FF"
-              tunnelOpacity={0}
-              speed={0.1}
-              pulseSpeed={2}
-              pulseLength={0.28}
-              pulseBlend={1}
-              pulseWidth={1}
-              cableCount={20}
-              thickness={0.35}
-              rimWidth={0.15}
-              waviness={0.3}
-              sway={0.5}
-              size={1.5}
-              centerX={0}
-              centerY={0}
-              glow={1}
-              fadeNear={0.5}
-              fadeFar={2}
-              brightness={1}
-              colorVariance
-              grain
-              grainIntensity={0.05}
-              opacity={0.8}
-              mouseInteraction
-              mouseStrength={0.1}
+              cableColor={LIGHT_TUNNEL_CONFIG.cableColor}
+              pulseColor={LIGHT_TUNNEL_CONFIG.pulseColor}
+              tunnelColor={LIGHT_TUNNEL_CONFIG.tunnelColor}
+              tunnelOpacity={LIGHT_TUNNEL_CONFIG.tunnelOpacity}
+              speed={LIGHT_TUNNEL_CONFIG.speed}
+              pulseSpeed={LIGHT_TUNNEL_CONFIG.pulseSpeed}
+              pulseLength={LIGHT_TUNNEL_CONFIG.pulseLength}
+              pulseBlend={LIGHT_TUNNEL_CONFIG.pulseBlend}
+              pulseWidth={LIGHT_TUNNEL_CONFIG.pulseWidth}
+              cableCount={LIGHT_TUNNEL_CONFIG.cableCount}
+              thickness={LIGHT_TUNNEL_CONFIG.thickness}
+              rimWidth={LIGHT_TUNNEL_CONFIG.rimWidth}
+              waviness={LIGHT_TUNNEL_CONFIG.waviness}
+              sway={LIGHT_TUNNEL_CONFIG.sway}
+              size={LIGHT_TUNNEL_CONFIG.size}
+              centerX={LIGHT_TUNNEL_CONFIG.centerX}
+              centerY={LIGHT_TUNNEL_CONFIG.centerY}
+              glow={LIGHT_TUNNEL_CONFIG.glow}
+              fadeNear={LIGHT_TUNNEL_CONFIG.fadeNear}
+              fadeFar={LIGHT_TUNNEL_CONFIG.fadeFar}
+              brightness={LIGHT_TUNNEL_CONFIG.brightness}
+              colorVariance={LIGHT_TUNNEL_CONFIG.colorVariance}
+              grain={LIGHT_TUNNEL_CONFIG.grain}
+              grainIntensity={LIGHT_TUNNEL_CONFIG.grainIntensity}
+              opacity={LIGHT_TUNNEL_CONFIG.opacity}
+              mouseInteraction={LIGHT_TUNNEL_CONFIG.mouseInteraction}
+              mouseStrength={LIGHT_TUNNEL_CONFIG.mouseStrength}
             />
           </div>
+
           <div
             className="absolute inset-x-0 bottom-0 h-[60vh] pointer-events-none z-[5]"
             style={{
@@ -110,11 +161,8 @@ export default function ColorGenerator() {
           <GradualBlur preset="bottom" height="28vh" zIndex={10} className="pointer-events-none" />
         </div>
 
-        {/* Content */}
         <div className="relative z-10 flex flex-col items-center max-w-5xl mx-auto">
-          {/* Headline only */}
           <h1 className="text-center leading-[0.96] tracking-tight">
-            {/* Line 1 — "Generate >> Your" */}
             <span className="block text-neutral-500 font-medium text-[clamp(2.6rem,8vw,6rem)]">
               <FoldText
                 text="Generate"
@@ -142,7 +190,6 @@ export default function ColorGenerator() {
                 color="inherit"
               />
             </span>
-            {/* Line 2 — "Perfect Color Palette" white bold */}
             <span className="block text-white font-extrabold text-[clamp(2.6rem,8vw,6rem)] mt-1">
               <FoldText
                 text="Perfect Color Palette"
@@ -159,14 +206,48 @@ export default function ColorGenerator() {
             </span>
           </h1>
         </div>
+
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-10">
+          <FolderFloat
+            items={FOLDER_FLOAT_ITEMS}
+            label={FOLDER_FLOAT_LABEL}
+            sublabel={FOLDER_FLOAT_SUBLABEL}
+            trigger="hover"
+            closeOnSelect
+            physics
+            drift={FOLDER_FLOAT_CONFIG.drift}
+            onSelect={handleFolderSelect}
+            folderColor={FOLDER_FLOAT_CONFIG.folderColor}
+            frontColor={FOLDER_FLOAT_CONFIG.frontColor}
+            paperColor={FOLDER_FLOAT_CONFIG.paperColor}
+            itemColor={FOLDER_FLOAT_CONFIG.itemColor}
+            itemTextColor={FOLDER_FLOAT_CONFIG.itemTextColor}
+            labelColor={FOLDER_FLOAT_CONFIG.labelColor}
+            width={FOLDER_FLOAT_CONFIG.width}
+            height={FOLDER_FLOAT_CONFIG.height}
+            radius={FOLDER_FLOAT_CONFIG.radius}
+            spread={FOLDER_FLOAT_CONFIG.spread}
+            lift={FOLDER_FLOAT_CONFIG.lift}
+            tilt={FOLDER_FLOAT_CONFIG.tilt}
+            flapAngle={FOLDER_FLOAT_CONFIG.flapAngle}
+            restAngle={FOLDER_FLOAT_CONFIG.restAngle}
+            openDuration={FOLDER_FLOAT_CONFIG.openDuration}
+            stagger={FOLDER_FLOAT_CONFIG.stagger}
+            bounce={FOLDER_FLOAT_CONFIG.bounce}
+          />
+        </div>
       </div>
 
-      {/* ═══════════════════ MAIN CONTENT ═════════════════════ */}
       <div className="max-w-[1200px] mx-auto px-6 space-y-24 mt-12 sm:mt-20">
-        {/* TOOLS */}
-        <section id="tools-section" className="space-y-12" data-animate>
+        <section ref={toolsSectionRef} id="tools-section" className="space-y-12" data-animate>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="sticky top-0 z-40 py-4 bg-[#020202]/80 backdrop-blur-xl border-b border-white/[0.05] -mx-6 px-6">
+            <div
+              className={`sticky top-0 z-40 py-4 bg-[#020202]/80 backdrop-blur-xl border-b border-white/[0.05] -mx-6 px-6 transition-all duration-500 ${
+                tabNavVisible
+                  ? "opacity-100 translate-y-0 pointer-events-auto"
+                  : "opacity-0 -translate-y-3 pointer-events-none"
+              }`}
+            >
               <div className="w-full overflow-x-auto scrollbar-hide -mb-4 pb-4">
                 <TabsList className="flex w-max mx-auto sm:w-auto sm:justify-center gap-1 p-1 rounded-2xl bg-white/[0.05] border border-white/[0.08] h-auto min-w-full sm:min-w-0">
                   {tools.map(({ id, label, icon: Icon }) => (
@@ -209,7 +290,6 @@ export default function ColorGenerator() {
           </Tabs>
         </section>
 
-        {/* DIVIDER */}
         <div className="flex items-center gap-8 py-12" data-animate>
           <div className="flex-1 h-px bg-white/[0.06]" />
           <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-600">
@@ -218,7 +298,6 @@ export default function ColorGenerator() {
           <div className="flex-1 h-px bg-white/[0.06]" />
         </div>
 
-        {/* PALETTES */}
         <section id="palettes-section" className="pb-24" data-animate>
           <PaletteShowcase />
         </section>

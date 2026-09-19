@@ -1,8 +1,3 @@
-// ============================================================
-// Color Conversion & Utility Library
-// Supports: HEX, RGB, RGBA, HSL, HSLA, CMYK
-// ============================================================
-
 export type ColorFormat = "hex" | "rgb" | "rgba" | "hsl" | "hsla" | "cmyk";
 
 export interface HSL {
@@ -40,10 +35,6 @@ export interface ColorData {
   hsla: HSLA;
   cmyk: CMYK;
 }
-
-// ============================================================
-// Core Conversions
-// ============================================================
 
 export function hslToRgb(h: number, s: number, l: number): RGB {
   s /= 100;
@@ -151,25 +142,18 @@ export function cmykToRgb(c: number, m: number, y: number, k: number): RGB {
   };
 }
 
-// ============================================================
-// Universal Color Parser — parses any format string to ColorData
-// ============================================================
-
 export function parseColorString(input: string): ColorData | null {
   const trimmed = input.trim().toLowerCase();
 
-  // HEX
   if (/^#?([a-f\d]{3}|[a-f\d]{6}|[a-f\d]{8})$/i.test(trimmed)) {
     let hex = trimmed.startsWith("#") ? trimmed : "#" + trimmed;
     if (hex.length === 9) {
-      // #RRGGBBAA
       hex = hex.substring(0, 7);
     }
     const rgb = hexToRgb(hex);
     return colorDataFromRgba(rgb.r, rgb.g, rgb.b, 1);
   }
 
-  // RGB
   const rgbMatch = trimmed.match(
     /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*([\d.]+))?\s*\)$/
   );
@@ -181,7 +165,6 @@ export function parseColorString(input: string): ColorData | null {
     return colorDataFromRgba(r, g, b, a);
   }
 
-  // HSL
   const hslMatch = trimmed.match(
     /^hsla?\(\s*(\d{1,3})\s*,\s*(\d{1,3})%?\s*,\s*(\d{1,3})%?\s*(?:,\s*([\d.]+))?\s*\)$/
   );
@@ -194,7 +177,6 @@ export function parseColorString(input: string): ColorData | null {
     return colorDataFromRgba(rgb.r, rgb.g, rgb.b, a);
   }
 
-  // CMYK
   const cmykMatch = trimmed.match(
     /^cmyk\(\s*(\d{1,3})%?\s*,\s*(\d{1,3})%?\s*,\s*(\d{1,3})%?\s*,\s*(\d{1,3})%?\s*\)$/
   );
@@ -233,10 +215,6 @@ export function colorDataFromHsl(h: number, s: number, l: number): ColorData {
   return colorDataFromRgba(rgb.r, rgb.g, rgb.b, 1);
 }
 
-// ============================================================
-// Color String Formatters
-// ============================================================
-
 export function formatColor(data: ColorData, format: ColorFormat): string {
   switch (format) {
     case "hex":
@@ -265,10 +243,6 @@ export const getColorString = (
   return formatColor(data, format);
 };
 
-// ============================================================
-// Gradation Generator
-// ============================================================
-
 export function generateGradation(hex: string, steps: number = 11): ColorData[] {
   const rgb = hexToRgb(hex);
   const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
@@ -293,10 +267,6 @@ export function generateShades(hex: string, count: number = 10): ColorData[] {
   }
   return results;
 }
-
-// ============================================================
-// Color Harmony Generators
-// ============================================================
 
 export function getComplementary(hex: string): ColorData[] {
   const rgb = hexToRgb(hex);
@@ -345,10 +315,6 @@ export function getSplitComplementary(hex: string): ColorData[] {
   });
 }
 
-// ============================================================
-// Color Contrast Checker (WCAG 2.1)
-// ============================================================
-
 export function getRelativeLuminance(r: number, g: number, b: number): number {
   const [rs, gs, bs] = [r, g, b].map((c) => {
     c = c / 255;
@@ -381,10 +347,6 @@ export function getWcagRating(ratio: number): {
   };
 }
 
-// ============================================================
-// Color Blender
-// ============================================================
-
 export function blendColors(hex1: string, hex2: string, steps: number = 5): ColorData[] {
   const rgb1 = hexToRgb(hex1);
   const rgb2 = hexToRgb(hex2);
@@ -398,10 +360,6 @@ export function blendColors(hex1: string, hex2: string, steps: number = 5): Colo
   }
   return result;
 }
-
-// ============================================================
-// Random & Utilities
-// ============================================================
 
 export function generateRandomColor(): string {
   return (
@@ -446,10 +404,6 @@ export function getTextColor(hex: string): string {
   return getLuminance(hex) === "light" ? "#000000" : "#ffffff";
 }
 
-// ============================================================
-// CSS Gradient Generator
-// ============================================================
-
 export type GradientDirection =
   | "to right"
   | "to left"
@@ -484,10 +438,6 @@ export function generateGradientCSS(
       return `conic-gradient(${colorStops})`;
   }
 }
-
-// ============================================================
-// Saved Colors (localStorage)
-// ============================================================
 
 const SAVED_COLORS_KEY = "color-generator-saved-colors";
 const COLOR_HISTORY_KEY = "color-generator-history";

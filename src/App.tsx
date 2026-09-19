@@ -11,8 +11,6 @@ function App() {
           <ColorGenerator />
         </main>
         <Footer />
-
-        {/* Subtle noise for depth */}
         <div className="fixed inset-0 pointer-events-none opacity-[0.015] mix-blend-overlay z-[9999] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
       </div>
     </SmoothScrollProvider>

@@ -21,6 +21,7 @@ import {
   getTextColor,
   generateShades,
 } from "@/hooks/color-main";
+import { COLOR_FORMAT_OPTIONS, COPIED_RESET_MS, PASTE_COLOR_EXAMPLES } from "@/constants";
 
 interface ColorPickerConverterProps {
   onColorChange?: (color: ColorData) => void;
@@ -69,7 +70,6 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
     [onColorChange]
   );
 
-  // Draw saturation/lightness picker
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -91,7 +91,6 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
     ctx.fillRect(0, 0, w, h);
   }, [colorData.hsl.h]);
 
-  // Draw hue strip
   useEffect(() => {
     const canvas = hueCanvasRef.current;
     if (!canvas) return;
@@ -157,7 +156,7 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
     const success = await copyToClipboard(text);
     if (success) {
       setCopiedFormat(format);
-      setTimeout(() => setCopiedFormat(null), 1500);
+      setTimeout(() => setCopiedFormat(null), COPIED_RESET_MS);
     }
   };
 
@@ -170,7 +169,7 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
   const handleSave = () => {
     saveColor(colorData.hex);
     setSaved(true);
-    setTimeout(() => setSaved(false), 1500);
+    setTimeout(() => setSaved(false), COPIED_RESET_MS);
   };
 
   const handleHexChange = (val: string) => {
@@ -213,19 +212,9 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
 
   const shades = generateShades(colorData.hex, 10);
 
-  const formats: { format: ColorFormat; label: string }[] = [
-    { format: "hex", label: "HEX" },
-    { format: "rgb", label: "RGB" },
-    { format: "rgba", label: "RGBA" },
-    { format: "hsl", label: "HSL" },
-    { format: "hsla", label: "HSLA" },
-    { format: "cmyk", label: "CMYK" },
-  ];
-
   return (
     <div className="space-y-8 animate-fade-in" id="color-picker">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* ============ LEFT: Visual Picker ============ */}
         <Card className="apple-card overflow-hidden lg:col-span-1 bg-white dark:bg-neutral-900 border-none">
           <CardHeader className="pb-4 pt-6 px-6">
             <CardTitle className="flex items-center gap-2.5 text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">
@@ -234,7 +223,6 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6 px-6 pb-8">
-            {/* Color Canvas */}
             <div className="relative rounded-2xl overflow-hidden cursor-crosshair shadow-sm border border-neutral-200/50 dark:border-neutral-800/50">
               <canvas
                 ref={canvasRef}
@@ -250,7 +238,6 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
               />
             </div>
 
-            {/* Hue Slider */}
             <div className="relative rounded-full overflow-hidden cursor-pointer border border-neutral-200/50 dark:border-neutral-800/50">
               <canvas
                 ref={hueCanvasRef}
@@ -266,7 +253,6 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
               />
             </div>
 
-            {/* HSL Sliders */}
             <div className="space-y-4">
               {[
                 { label: "Hue", value: colorData.hsl.h, max: 360, suffix: "°", key: "h" as const },
@@ -311,7 +297,6 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
               ))}
             </div>
 
-            {/* Actions */}
             <div className="flex gap-3 pt-2">
               <Button
                 onClick={handleRandomize}
@@ -339,7 +324,6 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
           </CardContent>
         </Card>
 
-        {/* ============ MIDDLE: Color Values & Converter ============ */}
         <Card className="apple-card overflow-hidden lg:col-span-1 bg-white dark:bg-neutral-900 border-none">
           <CardHeader className="pb-4 pt-6 px-6">
             <CardTitle className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">
@@ -347,7 +331,6 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6 px-6 pb-8">
-            {/* Big Preview */}
             <div
               className="w-full h-32 rounded-2xl shadow-sm transition-all duration-500 flex items-end p-4 border border-neutral-200/50 dark:border-neutral-800/50"
               style={{ backgroundColor: colorData.hex }}
@@ -366,24 +349,23 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
               </span>
             </div>
 
-            {/* All Formats with Copy */}
             <div className="space-y-2">
-              {formats.map(({ format, label }) => (
-                <TooltipProvider key={format}>
+              {COLOR_FORMAT_OPTIONS.map(({ value: fmt, label }) => (
+                <TooltipProvider key={fmt}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div
                         className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200/30 dark:border-neutral-800/30 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all group cursor-pointer"
-                        onClick={() => handleCopy(format)}
+                        onClick={() => handleCopy(fmt)}
                       >
                         <span className="text-[10px] font-black text-neutral-400 w-10 shrink-0 uppercase tracking-widest">
                           {label}
                         </span>
                         <code className="text-[13px] flex-1 truncate font-medium text-neutral-700 dark:text-neutral-300">
-                          {formatColor(colorData, format)}
+                          {formatColor(colorData, fmt)}
                         </code>
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                          {copiedFormat === format ? (
+                          {copiedFormat === fmt ? (
                             <Check className="h-3.5 w-3.5 text-green-500" />
                           ) : (
                             <Copy className="h-3.5 w-3.5 text-neutral-400" />
@@ -397,7 +379,6 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
               ))}
             </div>
 
-            {/* Generated Shades */}
             <div className="space-y-4 pt-2">
               <div className="flex items-center gap-2">
                 <Palette className="h-4 w-4 text-neutral-400" />
@@ -432,7 +413,6 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
           </CardContent>
         </Card>
 
-        {/* ============ RIGHT: Manual Input ============ */}
         <Card className="apple-card overflow-hidden lg:col-span-1 bg-white dark:bg-neutral-900 border-none">
           <CardHeader className="pb-4 pt-6 px-6">
             <CardTitle className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">
@@ -487,7 +467,7 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
                         type="number"
                         min={0}
                         max={255}
-                        className="font-mono rounded-2xl h-12 text-[15px] bg-neutral-50 dark:bg-neutral-950"
+                        className="font-mono rounded-2xl h-12 text-[15px] bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800"
                         id={`rgb-${ch}-input`}
                       />
                     </div>
@@ -508,7 +488,7 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
                         type="number"
                         min={0}
                         max={100}
-                        className="font-mono rounded-2xl h-12 text-[14px] bg-neutral-50 dark:bg-neutral-950"
+                        className="font-mono rounded-2xl h-12 text-[14px] bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800"
                         id={`cmyk-${ch}-input`}
                       />
                     </div>
@@ -522,7 +502,7 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
                     value={pasteInput}
                     onChange={(e) => setPasteInput(e.target.value)}
                     placeholder="Paste color string..."
-                    className="font-mono rounded-2xl h-12 text-[14px] bg-neutral-50 dark:bg-neutral-950"
+                    className="font-mono rounded-2xl h-12 text-[14px] bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800"
                     id="paste-input"
                     onKeyDown={(e) => e.key === "Enter" && handlePaste()}
                   />
@@ -539,7 +519,7 @@ export default function ColorPickerConverter({ onColorChange }: ColorPickerConve
                     Examples
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {["rgb(0,0,0)", "hsl(220,10%,98%)", "rgba(0,0,0,0.5)"].map((example) => (
+                    {PASTE_COLOR_EXAMPLES.map((example) => (
                       <code
                         key={example}
                         className="text-[10px] px-3 py-1.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 cursor-pointer hover:bg-neutral-200 transition-colors border border-neutral-200/50 dark:border-neutral-800/50"

@@ -24,16 +24,14 @@ import {
   getTextColor,
   isValidHex,
 } from "@/hooks/color-main";
+import {
+  COLOR_FORMAT_OPTIONS,
+  COPIED_RESET_MS,
+  HARMONY_TYPES,
+  HARMONY_DESCRIPTIONS,
+} from "@/constants";
 
 type HarmonyType = "complementary" | "analogous" | "triadic" | "tetradic" | "split-complementary";
-
-const harmonyDescriptions: Record<HarmonyType, string> = {
-  complementary: "Two colors opposite on the color wheel for maximum contrast",
-  analogous: "Colors adjacent on the wheel for harmonious schemes",
-  triadic: "Three colors evenly spaced (120°) for balanced palettes",
-  tetradic: "Four colors forming a rectangle for diverse schemes",
-  "split-complementary": "A base color and two adjacent to its complement",
-};
 
 export default function ColorHarmony() {
   const [baseHex, setBaseHex] = useState("#000000");
@@ -60,7 +58,7 @@ export default function ColorHarmony() {
   const handleCopy = async (color: ColorData, idx: number) => {
     await copyToClipboard(formatColor(color, format));
     setCopiedIdx(idx);
-    setTimeout(() => setCopiedIdx(null), 1500);
+    setTimeout(() => setCopiedIdx(null), COPIED_RESET_MS);
   };
 
   const handleRandomize = () => {
@@ -79,7 +77,6 @@ export default function ColorHarmony() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6 px-6 pb-8">
-        {/* Controls */}
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex items-center gap-3 flex-1">
             <div
@@ -112,11 +109,11 @@ export default function ColorHarmony() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-neutral-200 dark:border-neutral-800">
-                <SelectItem value="complementary">Complementary</SelectItem>
-                <SelectItem value="analogous">Analogous</SelectItem>
-                <SelectItem value="triadic">Triadic</SelectItem>
-                <SelectItem value="tetradic">Tetradic</SelectItem>
-                <SelectItem value="split-complementary">Split Complementary</SelectItem>
+                {HARMONY_TYPES.map((ht) => (
+                  <SelectItem key={ht.value} value={ht.value}>
+                    {ht.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Select value={format} onValueChange={(v: ColorFormat) => setFormat(v)}>
@@ -127,21 +124,20 @@ export default function ColorHarmony() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-neutral-200 dark:border-neutral-800">
-                <SelectItem value="hex">HEX</SelectItem>
-                <SelectItem value="rgb">RGB</SelectItem>
-                <SelectItem value="rgba">RGBA</SelectItem>
-                <SelectItem value="hsl">HSL</SelectItem>
-                <SelectItem value="cmyk">CMYK</SelectItem>
+                {COLOR_FORMAT_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
         </div>
 
         <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest pl-1">
-          {harmonyDescriptions[harmonyType]}
+          {HARMONY_DESCRIPTIONS[harmonyType]}
         </p>
 
-        {/* Color Display */}
         <div className="flex h-40 rounded-3xl overflow-hidden shadow-sm border border-neutral-200/50 dark:border-neutral-800/50">
           {harmonyColors.map((color, idx) => (
             <div
@@ -176,7 +172,6 @@ export default function ColorHarmony() {
           ))}
         </div>
 
-        {/* Color Chips */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {harmonyColors.map((color, idx) => (
             <div

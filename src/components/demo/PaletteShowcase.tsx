@@ -1,9 +1,8 @@
-"use client";
-
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Copy, Check, ChevronDown, ChevronUp, Search, X } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -20,62 +19,13 @@ import {
   copyToClipboard,
   getTextColor,
 } from "@/hooks/color-main";
+import { COLOR_FORMAT_OPTIONS, COPIED_RESET_MS, PALETTE_INITIAL_VISIBLE } from "@/constants";
 import {
-  christmasColors,
-  coffeeColors,
-  coldColors,
-  creamColors,
-  cyberpunkColors,
-  galaxyColors,
-  goldColors,
-  halloweenColors,
-  initialTailwindColors,
-  kidsColors,
-  neonColors,
-  pastelColors,
-  rainbowColors,
-  ramadhanColors,
-  retroColors,
-  seaColors,
-  skyColors,
-  spaceXColors,
-  summerColors,
-  sunsetColors,
-  vintageColors,
-  warmColors,
-  weddingColors,
-} from "@/utils/color";
-
-interface PaletteSection {
-  title: string;
-  colors: Record<string, string>;
-}
-
-const allPalettes: PaletteSection[] = [
-  { title: "Tailwind CSS", colors: initialTailwindColors },
-  { title: "Pastel", colors: pastelColors },
-  { title: "Retro", colors: retroColors },
-  { title: "Vintage", colors: vintageColors },
-  { title: "Neon", colors: neonColors },
-  { title: "Gold & Metallic", colors: goldColors },
-  { title: "Warm", colors: warmColors },
-  { title: "Cold", colors: coldColors },
-  { title: "Summer", colors: summerColors },
-  { title: "Sunset", colors: sunsetColors },
-  { title: "Sky", colors: skyColors },
-  { title: "Sea & Ocean", colors: seaColors },
-  { title: "Coffee", colors: coffeeColors },
-  { title: "Cream", colors: creamColors },
-  { title: "Kids", colors: kidsColors },
-  { title: "Rainbow", colors: rainbowColors },
-  { title: "Space", colors: spaceXColors },
-  { title: "Galaxy", colors: galaxyColors },
-  { title: "Cyberpunk", colors: cyberpunkColors },
-  { title: "Wedding", colors: weddingColors },
-  { title: "Halloween", colors: halloweenColors },
-  { title: "Christmas", colors: christmasColors },
-  { title: "Ramadhan", colors: ramadhanColors },
-];
+  allPalettes,
+  PALETTE_CATEGORIES,
+  type PaletteCategory,
+  type PaletteSection,
+} from "@/data/palettes";
 
 function PaletteRow({ palette, format }: { palette: PaletteSection; format: ColorFormat }) {
   const [expandedColor, setExpandedColor] = useState<string | null>(null);
@@ -84,15 +34,13 @@ function PaletteRow({ palette, format }: { palette: PaletteSection; format: Colo
   const handleCopy = async (color: ColorData, key: string) => {
     await copyToClipboard(formatColor(color, format));
     setCopiedKey(key);
-    setTimeout(() => setCopiedKey(null), 1500);
+    setTimeout(() => setCopiedKey(null), COPIED_RESET_MS);
   };
 
   return (
     <Card className="apple-card overflow-hidden bg-white dark:bg-neutral-900 border-none">
       <CardContent className="p-6">
-        {/* Palette Header */}
         <div className="flex items-center gap-4 mb-6">
-          {/* Mini swatch dots — first 6 colors of the palette */}
           <div className="flex items-center gap-1 shrink-0">
             {Object.values(palette.colors)
               .slice(0, 6)
@@ -116,13 +64,17 @@ function PaletteRow({ palette, format }: { palette: PaletteSection; format: Colo
             <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 leading-tight">
               {palette.title}
             </h3>
-            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-0.5">
-              {Object.keys(palette.colors).length} Essential Colors
-            </p>
+            <div className="flex items-center gap-2 mt-0.5">
+              <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
+                {Object.keys(palette.colors).length} Essential Colors
+              </p>
+              <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-500">
+                {palette.category}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* All colors in this palette */}
         <div className="space-y-4">
           {Object.entries(palette.colors).map(([name, hex]) => {
             const shades = generateShades(hex, 11);
@@ -130,9 +82,7 @@ function PaletteRow({ palette, format }: { palette: PaletteSection; format: Colo
 
             return (
               <div key={name} className="group/row">
-                {/* Color Row: Name + Swatch + Shade Strip */}
                 <div className="flex items-center gap-4">
-                  {/* Color swatch + name */}
                   <div
                     className="flex items-center gap-3 w-40 sm:w-52 shrink-0 cursor-pointer"
                     onClick={() => setExpandedColor(isExpanded ? null : name)}
@@ -151,7 +101,6 @@ function PaletteRow({ palette, format }: { palette: PaletteSection; format: Colo
                     </div>
                   </div>
 
-                  {/* Shade Strip — full width */}
                   <div className="flex-1 flex h-8 rounded-xl overflow-hidden border border-neutral-200/30 dark:border-neutral-800/30 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]">
                     {shades.map((shade, idx) => (
                       <TooltipProvider key={idx}>
@@ -187,7 +136,6 @@ function PaletteRow({ palette, format }: { palette: PaletteSection; format: Colo
                     ))}
                   </div>
 
-                  {/* Expand toggle */}
                   <button
                     className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors p-1.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 shrink-0"
                     onClick={() => setExpandedColor(isExpanded ? null : name)}
@@ -200,7 +148,6 @@ function PaletteRow({ palette, format }: { palette: PaletteSection; format: Colo
                   </button>
                 </div>
 
-                {/* Expanded detail grid */}
                 {isExpanded && (
                   <div className="mt-4 ml-0 sm:ml-52 grid grid-cols-11 gap-2 animate-fade-in">
                     {shades.map((shade, idx) => (
@@ -232,53 +179,163 @@ function PaletteRow({ palette, format }: { palette: PaletteSection; format: Colo
 export default function PaletteShowcase() {
   const [format, setFormat] = useState<ColorFormat>("hex");
   const [showAll, setShowAll] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategories, setActiveCategories] = useState<PaletteCategory[]>([]);
 
-  const visiblePalettes = showAll ? allPalettes : allPalettes.slice(0, 6);
+  const toggleCategory = (cat: PaletteCategory) => {
+    if (cat === "All") {
+      setActiveCategories([]);
+      return;
+    }
+    setActiveCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
+  };
+
+  const filteredPalettes = useMemo(() => {
+    let result = allPalettes;
+
+    if (activeCategories.length > 0) {
+      result = result.filter((p) => activeCategories.includes(p.category as PaletteCategory));
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.title.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q) ||
+          Object.keys(p.colors).some((name) => name.toLowerCase().includes(q))
+      );
+    }
+
+    return result;
+  }, [activeCategories, searchQuery]);
+
+  const isFiltering = activeCategories.length > 0 || searchQuery.trim().length > 0;
+  const visiblePalettes = isFiltering
+    ? filteredPalettes
+    : showAll
+      ? filteredPalettes
+      : filteredPalettes.slice(0, PALETTE_INITIAL_VISIBLE);
+
+  const clearFilters = () => {
+    setActiveCategories([]);
+    setSearchQuery("");
+  };
 
   return (
     <div className="space-y-12" id="palette-showcase">
-      {/* Section Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-        <div className="space-y-1">
-          <h2 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
-            Curated Collections
-          </h2>
-          <p className="text-[13px] font-medium text-neutral-500 dark:text-neutral-400">
-            {allPalettes.length} professionally curated sets with dynamic shade generation.
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div className="space-y-1">
+            <h2 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+              Curated Collections
+            </h2>
+            <p className="text-[13px] font-medium text-neutral-500 dark:text-neutral-400">
+              {allPalettes.length} professionally curated sets with dynamic shade generation.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-neutral-400">
+              Format
+            </span>
+            <Select value={format} onValueChange={(v: ColorFormat) => setFormat(v)}>
+              <SelectTrigger
+                className="w-[120px] rounded-2xl h-10 text-xs font-semibold bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800"
+                id="palette-format-select"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl border-neutral-200 dark:border-neutral-800">
+                {COLOR_FORMAT_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+          <div className="relative flex-1 max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-400" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search palettes..."
+              className="pl-9 h-9 rounded-2xl text-xs bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800"
+            />
+            {searchQuery && (
+              <button
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                onClick={() => setSearchQuery("")}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {PALETTE_CATEGORIES.map((cat) => {
+              const isAll = cat === "All";
+              const isActive = isAll
+                ? activeCategories.length === 0
+                : activeCategories.includes(cat);
+              return (
+                <button
+                  key={cat}
+                  onClick={() => toggleCategory(cat)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all border ${
+                    isActive
+                      ? "bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border-neutral-900 dark:border-white"
+                      : "bg-white dark:bg-neutral-900 text-neutral-500 border-neutral-200 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600"
+                  }`}
+                >
+                  {cat}
+                  {!isAll && isActive && <X className="h-2.5 w-2.5" />}
+                </button>
+              );
+            })}
+
+            {isFiltering && (
+              <button
+                onClick={clearFilters}
+                className="text-[11px] font-bold text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors underline underline-offset-2 ml-1"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
+        </div>
+
+        {isFiltering && (
+          <p className="text-[12px] text-neutral-500">
+            Showing {filteredPalettes.length} of {allPalettes.length} collections
+            {activeCategories.length > 0 && <span> in {activeCategories.join(", ")}</span>}
+            {searchQuery && <span> matching &ldquo;{searchQuery}&rdquo;</span>}
           </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-[11px] font-bold uppercase tracking-widest text-neutral-400">
-            Format
-          </span>
-          <Select value={format} onValueChange={(v: ColorFormat) => setFormat(v)}>
-            <SelectTrigger
-              className="w-[120px] rounded-2xl h-10 text-xs font-semibold bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800"
-              id="palette-format-select"
-            >
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="rounded-2xl border-neutral-200 dark:border-neutral-800">
-              <SelectItem value="hex">HEX</SelectItem>
-              <SelectItem value="rgb">RGB</SelectItem>
-              <SelectItem value="rgba">RGBA</SelectItem>
-              <SelectItem value="hsl">HSL</SelectItem>
-              <SelectItem value="hsla">HSLA</SelectItem>
-              <SelectItem value="cmyk">CMYK</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        )}
       </div>
 
-      {/* Palette Rows */}
       <div className="space-y-6">
-        {visiblePalettes.map((palette) => (
-          <PaletteRow key={palette.title} palette={palette} format={format} />
-        ))}
+        {visiblePalettes.length > 0 ? (
+          visiblePalettes.map((palette) => (
+            <PaletteRow key={palette.title} palette={palette} format={format} />
+          ))
+        ) : (
+          <div className="text-center py-16 text-neutral-500">
+            <p className="text-base font-semibold">No collections found</p>
+            <p className="text-sm mt-1">Try adjusting your search or filters</p>
+            <Button variant="outline" onClick={clearFilters} className="mt-4 rounded-2xl text-xs">
+              Clear filters
+            </Button>
+          </div>
+        )}
       </div>
 
-      {/* Show More / Less */}
-      {allPalettes.length > 6 && (
+      {!isFiltering && allPalettes.length > PALETTE_INITIAL_VISIBLE && (
         <div className="flex justify-center pt-4">
           <Button
             variant="outline"

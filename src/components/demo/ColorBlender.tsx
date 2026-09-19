@@ -21,10 +21,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  BLEND_DEFAULT_COLOR1,
+  BLEND_DEFAULT_COLOR2,
+  BLEND_STEPS_MIN,
+  BLEND_STEPS_MAX,
+  COPIED_RESET_MS,
+  COLOR_FORMAT_OPTIONS,
+} from "@/constants";
 
 export default function ColorBlender() {
-  const [color1, setColor1] = useState("#7c3aed");
-  const [color2, setColor2] = useState("#f97316");
+  const [color1, setColor1] = useState(BLEND_DEFAULT_COLOR1);
+  const [color2, setColor2] = useState(BLEND_DEFAULT_COLOR2);
   const [steps, setSteps] = useState(5);
   const [format, setFormat] = useState<ColorFormat>("hex");
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
@@ -38,7 +46,7 @@ export default function ColorBlender() {
   const handleCopy = async (idx: number) => {
     await copyToClipboard(formatColor(blended[idx], format));
     setCopiedIdx(idx);
-    setTimeout(() => setCopiedIdx(null), 1500);
+    setTimeout(() => setCopiedIdx(null), COPIED_RESET_MS);
   };
 
   const randomize = () => {
@@ -47,29 +55,33 @@ export default function ColorBlender() {
   };
 
   return (
-    <Card className="glass-card overflow-hidden animate-slide-up" id="color-blender">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Blend className="h-5 w-5 text-cyan-500" />
+    <Card
+      className="apple-card overflow-hidden bg-white dark:bg-neutral-900 border-none animate-fade-in"
+      id="color-blender"
+    >
+      <CardHeader className="pb-4 pt-6 px-6">
+        <CardTitle className="flex items-center gap-2.5 text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">
+          <Blend className="h-4 w-4 text-neutral-500" />
           Color Blender
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Colors */}
+      <CardContent className="space-y-6 px-6 pb-8">
         <div className="flex items-end gap-3">
           <div className="flex-1">
-            <Label className="text-xs text-muted-foreground">Color 1</Label>
-            <div className="flex gap-2 items-center mt-1">
+            <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
+              Color 1
+            </Label>
+            <div className="flex gap-2 items-center mt-2">
               <input
                 type="color"
                 value={isValidHex(color1) ? color1 : "#000000"}
                 onChange={(e) => setColor1(e.target.value)}
-                className="w-10 h-10 rounded-xl border-0 cursor-pointer"
+                className="w-10 h-10 rounded-xl border border-neutral-200 dark:border-neutral-800 cursor-pointer shrink-0 bg-transparent"
               />
               <Input
                 value={color1}
                 onChange={(e) => setColor1(e.target.value)}
-                className="font-mono rounded-xl"
+                className="font-mono rounded-2xl h-10 bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800"
                 id="blend-color1-input"
               />
             </div>
@@ -78,55 +90,69 @@ export default function ColorBlender() {
             variant="outline"
             size="icon"
             onClick={randomize}
-            className="rounded-xl mb-0.5"
+            className="rounded-2xl h-10 w-10 mb-0.5 border-neutral-200 dark:border-neutral-800"
             id="blend-random-btn"
           >
             <RotateCw className="h-4 w-4" />
           </Button>
           <div className="flex-1">
-            <Label className="text-xs text-muted-foreground">Color 2</Label>
-            <div className="flex gap-2 items-center mt-1">
+            <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
+              Color 2
+            </Label>
+            <div className="flex gap-2 items-center mt-2">
               <input
                 type="color"
                 value={isValidHex(color2) ? color2 : "#ffffff"}
                 onChange={(e) => setColor2(e.target.value)}
-                className="w-10 h-10 rounded-xl border-0 cursor-pointer"
+                className="w-10 h-10 rounded-xl border border-neutral-200 dark:border-neutral-800 cursor-pointer shrink-0 bg-transparent"
               />
               <Input
                 value={color2}
                 onChange={(e) => setColor2(e.target.value)}
-                className="font-mono rounded-xl"
+                className="font-mono rounded-2xl h-10 bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800"
                 id="blend-color2-input"
               />
             </div>
           </div>
         </div>
 
-        {/* Steps */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between">
-            <Label className="text-xs text-muted-foreground">Steps</Label>
-            <span className="text-xs font-mono text-muted-foreground">{steps}</span>
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <Label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+              Steps
+            </Label>
+            <span className="text-[11px] font-semibold text-neutral-600 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded-md">
+              {steps}
+            </span>
           </div>
-          <Slider min={2} max={20} step={1} value={[steps]} onValueChange={([v]) => setSteps(v)} />
+          <Slider
+            min={BLEND_STEPS_MIN}
+            max={BLEND_STEPS_MAX}
+            step={1}
+            value={[steps]}
+            onValueChange={([v]) => setSteps(v)}
+          />
         </div>
 
         <div className="flex justify-end">
           <Select value={format} onValueChange={(v: ColorFormat) => setFormat(v)}>
-            <SelectTrigger className="w-[120px] rounded-xl" id="blend-format-select">
+            <SelectTrigger
+              className="w-[130px] rounded-2xl h-10 font-semibold text-xs border-neutral-200 dark:border-neutral-800"
+              id="blend-format-select"
+            >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="hex">HEX</SelectItem>
-              <SelectItem value="rgb">RGB</SelectItem>
-              <SelectItem value="hsl">HSL</SelectItem>
-              <SelectItem value="cmyk">CMYK</SelectItem>
+            <SelectContent className="rounded-2xl border-neutral-200 dark:border-neutral-800">
+              {COLOR_FORMAT_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
 
-        {/* Blend Result */}
-        <div className="flex h-20 rounded-xl overflow-hidden shadow-xl">
+        <div className="flex h-20 rounded-2xl overflow-hidden shadow-sm border border-neutral-200/50 dark:border-neutral-800/50">
           {blended.map((color, idx) => (
             <div
               key={idx}
@@ -152,16 +178,20 @@ export default function ColorBlender() {
           ))}
         </div>
 
-        {/* Color list */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5 max-h-40 overflow-y-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-40 overflow-y-auto">
           {blended.map((color, idx) => (
             <div
               key={idx}
-              className="flex items-center gap-1.5 p-1.5 rounded-lg bg-muted/30 hover:bg-muted/60 cursor-pointer transition-colors"
+              className="flex items-center gap-2 p-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200/30 dark:border-neutral-800/30 hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer transition-colors"
               onClick={() => handleCopy(idx)}
             >
-              <div className="w-5 h-5 rounded-md shrink-0" style={{ backgroundColor: color.hex }} />
-              <code className="text-[9px] truncate">{formatColor(color, format)}</code>
+              <div
+                className="w-5 h-5 rounded-lg shrink-0 border border-neutral-200/50 dark:border-neutral-800/50"
+                style={{ backgroundColor: color.hex }}
+              />
+              <code className="text-[10px] truncate text-neutral-600 dark:text-neutral-400">
+                {formatColor(color, format)}
+              </code>
             </div>
           ))}
         </div>

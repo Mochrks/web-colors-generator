@@ -19,22 +19,10 @@ import {
   copyToClipboard,
   isValidHex,
 } from "@/hooks/color-main";
-
-const directions: { value: GradientDirection; label: string }[] = [
-  { value: "to right", label: "→ Right" },
-  { value: "to left", label: "← Left" },
-  { value: "to bottom", label: "↓ Down" },
-  { value: "to top", label: "↑ Up" },
-  { value: "to bottom right", label: "↘ Bottom Right" },
-  { value: "to top right", label: "↗ Top Right" },
-  { value: "45deg", label: "45°" },
-  { value: "90deg", label: "90°" },
-  { value: "135deg", label: "135°" },
-  { value: "180deg", label: "180°" },
-];
+import { GRADIENT_DIRECTIONS, GRADIENT_DEFAULT_COLORS, COPIED_RESET_MS } from "@/constants";
 
 export default function GradientGenerator() {
-  const [colors, setColors] = useState<string[]>(["#7c3aed", "#ec4899", "#f97316"]);
+  const [colors, setColors] = useState<string[]>([...GRADIENT_DEFAULT_COLORS]);
   const [gradType, setGradType] = useState<GradientType>("linear");
   const [direction, setDirection] = useState<GradientDirection>("to right");
   const [copied, setCopied] = useState(false);
@@ -49,7 +37,7 @@ export default function GradientGenerator() {
   const handleCopy = async () => {
     await copyToClipboard(fullCSS);
     setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    setTimeout(() => setCopied(false), COPIED_RESET_MS);
   };
 
   const addColor = () => {
@@ -73,28 +61,32 @@ export default function GradientGenerator() {
   };
 
   return (
-    <Card className="glass-card overflow-hidden animate-slide-up" id="gradient-generator">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Paintbrush className="h-5 w-5 text-orange-500" />
+    <Card
+      className="apple-card overflow-hidden bg-white dark:bg-neutral-900 border-none animate-fade-in"
+      id="gradient-generator"
+    >
+      <CardHeader className="pb-4 pt-6 px-6">
+        <CardTitle className="flex items-center gap-2.5 text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">
+          <Paintbrush className="h-4 w-4 text-neutral-500" />
           Gradient Generator
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Gradient Preview */}
+      <CardContent className="space-y-6 px-6 pb-8">
         <div
-          className="w-full h-40 sm:h-52 rounded-xl shadow-xl transition-all duration-500"
+          className="w-full h-40 sm:h-52 rounded-2xl shadow-sm border border-neutral-200/50 dark:border-neutral-800/50 transition-all duration-500"
           style={{ background: gradientCSS }}
           id="gradient-preview"
         />
 
-        {/* Controls */}
         <div className="flex flex-col sm:flex-row gap-3">
           <Select value={gradType} onValueChange={(v: GradientType) => setGradType(v)}>
-            <SelectTrigger className="w-full sm:w-[140px] rounded-xl" id="grad-type-select">
+            <SelectTrigger
+              className="w-full sm:w-[140px] rounded-2xl h-10 border-neutral-200 dark:border-neutral-800 font-semibold text-xs"
+              id="grad-type-select"
+            >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-2xl border-neutral-200 dark:border-neutral-800">
               <SelectItem value="linear">Linear</SelectItem>
               <SelectItem value="radial">Radial</SelectItem>
               <SelectItem value="conic">Conic</SelectItem>
@@ -102,11 +94,14 @@ export default function GradientGenerator() {
           </Select>
           {gradType === "linear" && (
             <Select value={direction} onValueChange={(v: GradientDirection) => setDirection(v)}>
-              <SelectTrigger className="w-full sm:w-[160px] rounded-xl" id="grad-direction-select">
+              <SelectTrigger
+                className="w-full sm:w-[160px] rounded-2xl h-10 border-neutral-200 dark:border-neutral-800 font-semibold text-xs"
+                id="grad-direction-select"
+              >
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                {directions.map((d) => (
+              <SelectContent className="rounded-2xl border-neutral-200 dark:border-neutral-800">
+                {GRADIENT_DIRECTIONS.map((d) => (
                   <SelectItem key={d.value} value={d.value}>
                     {d.label}
                   </SelectItem>
@@ -114,34 +109,43 @@ export default function GradientGenerator() {
               </SelectContent>
             </Select>
           )}
-          <Button variant="outline" onClick={randomize} className="rounded-xl" id="grad-random-btn">
-            <RotateCw className="h-4 w-4 mr-2" />
-            Random
+          <Button
+            variant="outline"
+            onClick={randomize}
+            className="rounded-2xl h-10 border-neutral-200 dark:border-neutral-800 font-semibold text-xs"
+            id="grad-random-btn"
+          >
+            <RotateCw className="h-3.5 w-3.5 mr-2" />
+            Randomize
           </Button>
         </div>
 
-        {/* Color Stops */}
-        <div className="space-y-2">
-          <Label className="text-xs text-muted-foreground">Color Stops</Label>
+        <div className="space-y-3">
+          <Label className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest">
+            Color Stops
+          </Label>
           <div className="flex flex-wrap gap-2">
             {colors.map((color, idx) => (
-              <div key={idx} className="flex items-center gap-1.5 p-1.5 rounded-xl bg-muted/50">
+              <div
+                key={idx}
+                className="flex items-center gap-2 p-2 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200/50 dark:border-neutral-800/50"
+              >
                 <input
                   type="color"
                   value={isValidHex(color) ? color : "#000000"}
                   onChange={(e) => updateColor(idx, e.target.value)}
-                  className="w-8 h-8 rounded-lg border-0 cursor-pointer"
+                  className="w-8 h-8 rounded-xl border border-neutral-200 dark:border-neutral-800 cursor-pointer bg-transparent"
                 />
                 <Input
                   value={color}
                   onChange={(e) => updateColor(idx, e.target.value)}
-                  className="w-24 font-mono text-xs rounded-lg h-8"
+                  className="w-24 font-mono text-xs rounded-xl h-8 bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800"
                 />
                 {colors.length > 2 && (
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-7 w-7 rounded-lg text-muted-foreground hover:text-destructive"
+                    className="h-7 w-7 rounded-xl text-neutral-400 hover:text-red-500"
                     onClick={() => removeColor(idx)}
                   >
                     <X className="h-3.5 w-3.5" />
@@ -152,7 +156,7 @@ export default function GradientGenerator() {
             <Button
               variant="outline"
               size="icon"
-              className="h-11 w-11 rounded-xl"
+              className="h-[52px] w-[52px] rounded-2xl border-neutral-200 dark:border-neutral-800"
               onClick={addColor}
               id="add-color-stop-btn"
             >
@@ -161,13 +165,12 @@ export default function GradientGenerator() {
           </div>
         </div>
 
-        {/* CSS Output */}
-        <div className="relative p-3 rounded-xl bg-muted/50 font-mono text-xs break-all">
-          <code>{fullCSS}</code>
+        <div className="relative p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200/30 dark:border-neutral-800/30 font-mono text-xs break-all">
+          <code className="text-neutral-700 dark:text-neutral-300">{fullCSS}</code>
           <Button
             variant="ghost"
             size="icon"
-            className="absolute top-2 right-2 h-7 w-7 rounded-lg"
+            className="absolute top-2 right-2 h-7 w-7 rounded-xl"
             onClick={handleCopy}
             id="copy-gradient-css-btn"
           >

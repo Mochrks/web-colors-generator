@@ -1,50 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import { Renderer, Program, Mesh, Triangle } from "ogl";
 import "../../styles/LightTunnel.css";
-
-export type FlowDirection = "inward" | "outward";
-
-export interface LightTunnelProps {
-  cableColor?: string;
-  pulseColor?: string;
-  tunnelColor?: string;
-  tunnelOpacity?: number;
-  speed?: number;
-  flowDirection?: FlowDirection;
-  pulseSpeed?: number;
-  pulseLength?: number;
-  pulseBlend?: number;
-  pulseWidth?: number;
-  cableCount?: number;
-  thickness?: number;
-  rimWidth?: number;
-  waviness?: number;
-  sway?: number;
-  size?: number;
-  centerX?: number;
-  centerY?: number;
-  glow?: number;
-  fadeNear?: number;
-  fadeFar?: number;
-  brightness?: number;
-  colorVariance?: boolean;
-  grain?: boolean;
-  grainIntensity?: number;
-  opacity?: number;
-  mouseInteraction?: boolean;
-  mouseStrength?: number;
-  lightMode?: boolean;
-  className?: string;
-}
+import type { LightTunnelProps } from "@/types/light-tunnel";
+import { hexToRgb as hexToRgbUtil } from "@/utils/color";
 
 const hexToRgb = (hex: string): [number, number, number] => {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  if (!result) return [1, 1, 1];
-  return [
-    parseInt(result[1], 16) / 255,
-    parseInt(result[2], 16) / 255,
-    parseInt(result[3], 16) / 255,
-  ];
+  const [r, g, b] = Object.values(hexToRgbUtil(hex));
+  return [r / 255, g / 255, b / 255];
 };
 
 const vertex = `#version 300 es
@@ -372,9 +334,7 @@ const LightTunnel: React.FC<LightTunnelProps> = ({
       ctxMap.delete(container);
       try {
         container.removeChild(canvas);
-      } catch {
-        // ignore
-      }
+      } catch {}
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, []);

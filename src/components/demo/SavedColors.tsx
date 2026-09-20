@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { COLOR_HISTORY_KEY } from "@/constants";
 
 export default function SavedColors() {
   const [saved, setSaved] = useState<string[]>([]);
@@ -54,7 +55,7 @@ export default function SavedColors() {
   };
 
   const handleClearHistory = () => {
-    localStorage.removeItem("color-generator-history");
+    localStorage.removeItem(COLOR_HISTORY_KEY);
     setHistory([]);
   };
 
@@ -81,7 +82,6 @@ export default function SavedColors() {
               className="w-full aspect-square rounded-xl shadow-md color-swatch border border-white/10"
               style={{ backgroundColor: hex }}
             >
-              {/* Hover overlay */}
               <div className="absolute inset-0 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <div
                   className="p-1 rounded-lg backdrop-blur-sm"
@@ -97,7 +97,6 @@ export default function SavedColors() {
                   )}
                 </div>
               </div>
-              {/* Remove button */}
               {removable && (
                 <button
                   className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md"

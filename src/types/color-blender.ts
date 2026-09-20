@@ -1,8 +1,4 @@
-// ============================================================
-// Color Blender Types
-// ============================================================
-
-import type { ColorData } from "../hooks/color-main";
+import type { ColorData } from "@/types/color-main";
 
 export interface BlendResult {
   colors: ColorData[];

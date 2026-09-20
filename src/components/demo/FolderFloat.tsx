@@ -207,7 +207,6 @@ const FolderFloat: React.FC<FolderFloatProps> = ({
     };
     measure();
     document.fonts?.ready.then(measure);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [n, labelsKey]);
 
   const stopPhysics = useCallback(() => {
@@ -332,7 +331,6 @@ const FolderFloat: React.FC<FolderFloatProps> = ({
       s.raf = requestAnimationFrame(tick);
     };
     w.raf = requestAnimationFrame(tick);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [n, spread, lift, pos.map((p) => `${p.x},${p.y}`).join("|")]);
 
   const set = useCallback(

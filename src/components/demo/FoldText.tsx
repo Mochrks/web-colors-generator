@@ -3,7 +3,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import "../../styles/FoldText.css";
-import type { FoldTextProps, Hinge, SplitBy } from "../../types/fold-text";
+import type { FoldTextProps, Hinge, SplitBy } from "@/types/fold-text";
 
 gsap.registerPlugin(ScrollTrigger);
 

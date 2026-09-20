@@ -1,7 +1,3 @@
-// ============================================================
-// Color Generator (Main Page) Types
-// ============================================================
-
 import type { ComponentType } from "react";
 
 export type ToolId =

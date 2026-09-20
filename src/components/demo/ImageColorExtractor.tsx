@@ -44,11 +44,9 @@ export default function ImageColorExtractor() {
     const imageData = ctx.getImageData(0, 0, w, h);
     const pixels = imageData.data;
 
-    // Simple color quantization
     const colorMap = new Map<string, { r: number; g: number; b: number; count: number }>();
-    const step = 4; // sample every 4 pixels
+    const step = 4;
     for (let i = 0; i < pixels.length; i += 4 * step) {
-      // Round to nearest 16 for grouping
       const r = Math.round(pixels[i] / 16) * 16;
       const g = Math.round(pixels[i + 1] / 16) * 16;
       const b = Math.round(pixels[i + 2] / 16) * 16;
@@ -61,12 +59,10 @@ export default function ImageColorExtractor() {
       }
     }
 
-    // Sort by frequency and take top 12
     const sorted = Array.from(colorMap.values())
       .sort((a, b) => b.count - a.count)
       .slice(0, 16);
 
-    // Remove very similar colors
     const unique: ColorData[] = [];
     for (const c of sorted) {
       const isDuplicate = unique.some((u) => {

@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import "../../styles/ColorWheelCanvas.css";
 
-// ─── Simplex-like smooth noise (no deps) ────────────────────
 function fade(t: number) {
   return t * t * t * (t * (t * 6 - 15) + 10);
 }
@@ -32,7 +31,6 @@ function noise2(x: number, y: number): number {
   );
 }
 
-// ─── Blob vertex ────────────────────────────────────────────
 interface Blob {
   baseR: number;
   noiseOffset: number;
@@ -97,23 +95,21 @@ export default function ColorWheelCanvas() {
     resize();
     window.addEventListener("resize", resize);
 
-    // ── Build blobs ───────────────────────────────────────────
     const BLOB_COUNT = 6;
     const blobs: Blob[] = Array.from({ length: BLOB_COUNT }, (_, i) => ({
-      baseR: 0.18 + (i % 3) * 0.06, // fraction of min(W,H)
+      baseR: 0.18 + (i % 3) * 0.06,
       noiseOffset: i * 7.31,
       noiseSpeed: 0.00008 + i * 0.000025,
       hueBase: (i / BLOB_COUNT) * 360,
       hueShift: 30 + i * 15,
       alpha: 0.22 + (i % 2) * 0.06,
-      x: 0.3 + (i % 3) * 0.2, // normalized 0-1
+      x: 0.3 + (i % 3) * 0.2,
       y: 0.25 + Math.floor(i / 3) * 0.45,
       driftAngle: (i / BLOB_COUNT) * Math.PI * 2,
       driftSpeed: 0.0004 + i * 0.00015,
       driftR: 0.08 + (i % 2) * 0.05,
     }));
 
-    // ── Mouse ────────────────────────────────────────────────
     const onMouse = (e: MouseEvent) => {
       const r = canvas.getBoundingClientRect();
       mouseRef.current = { x: e.clientX - r.left, y: e.clientY - r.top };
@@ -124,7 +120,6 @@ export default function ColorWheelCanvas() {
     canvas.addEventListener("mousemove", onMouse);
     canvas.addEventListener("mouseleave", onLeave);
 
-    // ── Floating specks ──────────────────────────────────────
     const SPECK_COUNT = 38;
     const specks = Array.from({ length: SPECK_COUNT }, (_, i) => ({
       x: Math.random(),
@@ -136,25 +131,21 @@ export default function ColorWheelCanvas() {
       twinkle: Math.random() * Math.PI * 2,
     }));
 
-    // ── Render loop ──────────────────────────────────────────
     const render = () => {
       const t = tickRef.current++;
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
       const S = Math.min(W, H);
 
-      // Clear with very slight trail
       ctx.globalCompositeOperation = "source-over";
       ctx.fillStyle = "rgba(2,2,2,0.22)";
       ctx.fillRect(0, 0, W, H);
 
-      // ── Draw blobs ─────────────────────────────────────────
       blobs.forEach((b, i) => {
         b.driftAngle += b.driftSpeed;
         const cx = (b.x + Math.cos(b.driftAngle) * b.driftR) * W;
         const cy = (b.y + Math.sin(b.driftAngle * 1.3) * b.driftR) * H;
 
-        // Mouse attraction — subtle
         const mdx = mx - cx,
           mdy = my - cy;
         const md = Math.sqrt(mdx * mdx + mdy * mdy);
@@ -167,7 +158,6 @@ export default function ColorWheelCanvas() {
         const hue = (b.hueBase + t * 0.18 + i * 22) % 360;
         const hue2 = (hue + b.hueShift) % 360;
 
-        // outer glow pass
         ctx.globalCompositeOperation = "screen";
         ctx.globalAlpha = b.alpha * 0.5;
         const gGrad = ctx.createRadialGradient(finalCx, finalCy, 0, finalCx, finalCy, R * 1.9);
@@ -178,7 +168,6 @@ export default function ColorWheelCanvas() {
         makeBlobPath(ctx, finalCx, finalCy, R * 1.6, t, b.noiseOffset + 10, noiseAmp * 0.6);
         ctx.fill();
 
-        // core fill
         ctx.globalAlpha = b.alpha * 0.9;
         const cGrad = ctx.createRadialGradient(
           finalCx - R * 0.15,
@@ -197,7 +186,6 @@ export default function ColorWheelCanvas() {
         ctx.fill();
       });
 
-      // ── Floating specks ────────────────────────────────────
       ctx.globalCompositeOperation = "screen";
       specks.forEach((s) => {
         s.angle += s.speed;
@@ -221,7 +209,6 @@ export default function ColorWheelCanvas() {
         ctx.restore();
       });
 
-      // ── Chromatic lens flare streaks ───────────────────────
       if (t % 3 === 0) {
         ctx.globalCompositeOperation = "screen";
         ctx.globalAlpha = 0.025;

@@ -1,8 +1,3 @@
-// ============================================================
-// Color Main Types
-// Core color types, formats, and data structures
-// ============================================================
-
 export type ColorFormat = "hex" | "rgb" | "rgba" | "hsl" | "hsla" | "cmyk";
 
 export type GradientDirection =

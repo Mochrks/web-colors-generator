@@ -8,7 +8,7 @@ import React, {
 } from "react";
 
 import "../../styles/GradualBlur.css";
-import type { GradualBlurProps } from "../../types/gradual-blur";
+import type { GradualBlurProps } from "@/types/gradual-blur";
 
 const DEFAULT_CONFIG: Partial<GradualBlurProps> = {
   position: "bottom",
@@ -76,11 +76,9 @@ const getGradientDirection = (position: string): string => {
   return directions[position] || "to bottom";
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const debounce = <T extends (...args: any[]) => void>(fn: T, wait: number) => {
+const debounce = <T extends (...args: unknown[]) => void>(fn: T, wait: number) => {
   let t: ReturnType<typeof setTimeout>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (...a: any[]) => {
+  return (...a: Parameters<T>) => {
     clearTimeout(t);
     t = setTimeout(() => fn(...a), wait);
   };
@@ -265,10 +263,18 @@ const GradualBlur: React.FC<PropsWithChildren<GradualBlurProps>> = (props) => {
 
 const GradualBlurMemo = React.memo(GradualBlur);
 GradualBlurMemo.displayName = "GradualBlur";
-// @ts-expect-error - Attaching statics to React.memo
-GradualBlurMemo.PRESETS = PRESETS;
-// @ts-expect-error - Attaching statics to React.memo
-GradualBlurMemo.CURVE_FUNCTIONS = CURVE_FUNCTIONS;
+(
+  GradualBlurMemo as React.MemoExoticComponent<typeof GradualBlur> & {
+    PRESETS: typeof PRESETS;
+    CURVE_FUNCTIONS: typeof CURVE_FUNCTIONS;
+  }
+).PRESETS = PRESETS;
+(
+  GradualBlurMemo as React.MemoExoticComponent<typeof GradualBlur> & {
+    PRESETS: typeof PRESETS;
+    CURVE_FUNCTIONS: typeof CURVE_FUNCTIONS;
+  }
+).CURVE_FUNCTIONS = CURVE_FUNCTIONS;
 export default GradualBlurMemo;
 
 const injectStyles = () => {

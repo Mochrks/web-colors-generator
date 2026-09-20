@@ -1,7 +1,3 @@
-// ============================================================
-// Contrast Checker Types
-// ============================================================
-
 export interface WcagRating {
   aa: boolean;
   aaa: boolean;

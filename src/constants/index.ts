@@ -1,4 +1,4 @@
-import type { ColorFormat } from "@/hooks/color-main";
+import type { ColorFormat } from "@/types/color-main";
 
 export const COLOR_FORMAT_OPTIONS: { value: ColorFormat; label: string }[] = [
   { value: "hex", label: "HEX" },

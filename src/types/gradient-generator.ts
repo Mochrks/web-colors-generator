@@ -1,8 +1,4 @@
-// ============================================================
-// Gradient Generator Types
-// ============================================================
-
-import type { GradientDirection, GradientType } from "../hooks/color-main";
+import type { GradientDirection, GradientType } from "@/types/color-main";
 
 export interface GradientStop {
   color: string;
